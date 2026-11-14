@@ -1,0 +1,413 @@
+/*
+ * Component-level utilities for Figma effects that can't be expressed with a
+ * single token (gradients, layered fills). Components reference these by name.
+ */
+
+/* 0.5px hairline border — Figma badges */
+@utility border-hairline {
+  border-width: 0.5px;
+}
+
+/* Figma "_Base Buttons" fill: white + 1% black bottom fade */
+@utility bg-control {
+  background-color: var(--bg-surface);
+  background-image: linear-gradient(180deg, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 0.01) 100%);
+}
+
+/* Brand mark (28px glassy tile in sidebar header) — mirrors Figma layer stack */
+@utility brand-mark {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' preserveAspectRatio='none'><g transform='matrix(2.322 -2.9536 1.9272 9.1393 13.826 14.437)'><foreignObject x='-91.422' y='-91.422' width='182.84' height='182.84'><div xmlns='http://www.w3.org/1999/xhtml' style='background-image: conic-gradient(from 90deg, rgba(0, 0, 0, 0.8) -2.851%, rgba(0, 0, 0, 0.05) 0.43748%, rgba(0, 0, 0, 0.8) 2.9193%, rgba(0, 0, 0, 0.8) 47.696%, rgba(0, 0, 0, 0.05) 51.211%, rgba(0, 0, 0, 0.8) 53.159%, rgba(0, 0, 0, 0.8) 97.149%, rgba(0, 0, 0, 0.05) 100.44%); opacity:1; height: 100%; width: 100%;'></div></foreignObject></g></svg>");
+  backdrop-filter: blur(36.56px);
+  box-shadow: 0.731px 1.097px 1.097px 0 rgb(0 0 0 / 0.04), 0.731px 0.731px 0.731px 0 rgb(0 0 0 / 0.04);
+}
+@utility brand-mark-face {
+  background-image:
+    linear-gradient(180deg, rgb(255 255 255 / 0.02) 0%, rgb(255 255 255 / 0) 100%),
+    linear-gradient(90deg, rgb(0 0 0 / 0.5) 0%, rgb(0 0 0 / 0.5) 100%);
+  backdrop-filter: blur(10.5px);
+  box-shadow: 0 0.583px 0 0 rgb(0 0 0 / 0.03), inset 0 0 0.583px 0 rgb(255 255 255 / 0.05);
+}
+
+/* Badge padding compensating the 0.5px border so the outer box equals Figma (4 / 8 / 4 / 4) */
+@utility badge-pad {
+  padding: 3.5px 7.5px 3.5px 3.5px;
+}
+
+/* Enlarged invisible hit area for bare icon buttons */
+@utility hit-area {
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+  }
+}
+
+/* ── Chart hover layer (AreaChart) ───────────────────────────────────────────
+ * .chart-glide  — marker / guide / tooltip position. Transitions (not keyframes)
+ *                 so rapid scrubbing retargets from the current spot. Only glides
+ *                 while already visible (data-glide); appearing jumps in place.
+ * .chart-pop    — enter: fade + scale from 0.96 (never 0), origin at the marker side.
+ *                 Exit is quicker than enter.
+ * .chart-fade   — opacity only (guide line, veil).
+ */
+.chart-glide { transition: none; will-change: transform; }
+.chart-glide[data-glide] { transition: transform var(--duration-base) var(--ease-out); }
+
+.chart-pop {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+}
+.chart-pop[data-visible] {
+  opacity: 1;
+  transform: scale(1);
+  transition-duration: var(--duration-base);
+}
+
+.chart-fade { transition: opacity var(--duration-base) var(--ease-out); }
+
+/* Reduced motion: keep the fades (they aid comprehension), drop movement & scale.
+   Overrides the global 1ms clamp in index.css for these opacity fades only. */
+@media (prefers-reduced-motion: reduce) {
+  .chart-glide[data-glide] { transition: none !important; }
+  .chart-pop, .chart-pop[data-visible] { transform: none; transition-property: opacity !important; transition-duration: var(--duration-fast) !important; }
+  .chart-fade { transition-duration: var(--duration-fast) !important; }
+}
+
+/* Dark glass CTA — Figma "Add New Event" (_Base Buttons, dark): conic glass rim
+   (same layer stack as brand-mark, re-fitted to the 131×40 button) around a black/50 face. */
+@utility glass-dark {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 131 40' preserveAspectRatio='none'><g transform='matrix(10.864 -4.2194 9.0167 13.056 64.688 20.625)'><foreignObject x='-91.422' y='-91.422' width='182.84' height='182.84'><div xmlns='http://www.w3.org/1999/xhtml' style='background-image: conic-gradient(from 90deg, rgba(0, 0, 0, 0.8) -2.851%, rgba(0, 0, 0, 0.05) 0.43748%, rgba(0, 0, 0, 0.8) 2.9193%, rgba(0, 0, 0, 0.8) 47.696%, rgba(0, 0, 0, 0.05) 51.211%, rgba(0, 0, 0, 0.8) 53.159%, rgba(0, 0, 0, 0.8) 97.149%, rgba(0, 0, 0, 0.05) 100.44%); opacity:1; height: 100%; width: 100%;'></div></foreignObject></g></svg>");
+  background-size: 100% 100%;
+  backdrop-filter: blur(62.674px);
+  box-shadow: 1.253px 1.88px 1.88px 0 rgb(0 0 0 / 0.04), 1.253px 1.253px 1.253px 0 rgb(0 0 0 / 0.04);
+}
+@utility glass-dark-face {
+  background-color: rgb(0 0 0 / 0.5);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 1px 0 0 rgb(0 0 0 / 0.03), inset 0 0 1px 0 rgb(255 255 255 / 0.05);
+  text-shadow: 0 1.208px 2.416px rgb(0 0 0 / 0.25);
+}
+@media (hover: hover) and (pointer: fine) {
+  :hover > .glass-face { background-color: rgb(0 0 0 / 0.6); }
+}
+:active > .glass-face { background-color: rgb(0 0 0 / 0.7); }
+
+/* ── Motion: press, menu, section entrance ──────────────────────────────────── */
+
+/* Press feedback for buttons. Pair with a transition that includes `transform`. */
+.press:active:not(:disabled, [aria-disabled="true"]) { transform: scale(0.97); }
+
+/* Action menu (Menu.jsx) — stays mounted; transitions so rapid open/close retargets.
+   Enter 180ms, exit 120ms, strong ease-out; scales from the trigger corner (top-right). */
+.menu-pop {
+  transform-origin: top right;
+  opacity: 0;
+  transform: scale(0.96) translateY(-4px);
+  visibility: hidden;
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out),
+    visibility 0s linear var(--duration-fast);
+}
+.menu-pop[data-open] {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out),
+    visibility 0s;
+}
+.menu-chevron { transition: transform var(--duration-base) var(--ease-out); }
+
+/* Dropdown surface (Menu.jsx, Dropdown.jsx) — dark frosted glass: translucent neutral over a
+   24px blur, hairline white rim + top highlight, layered shadow so it floats, 16px radius with
+   a 6px inset (rows use 16 − 6 = 10px, concentric). White 14/20 text, 16px leading icons. */
+.menu-surface {
+  padding: 6px;
+  border-radius: 16px;
+  color: rgb(255 255 255 / 0.95);
+  background-color: rgb(38 38 38 / 0.62);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  backdrop-filter: blur(24px) saturate(160%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 1px 2px rgb(0 0 0 / 0.08),
+    0 8px 16px -4px rgb(0 0 0 / 0.14),
+    0 24px 48px -12px rgb(0 0 0 / 0.22);
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .menu-surface { background-color: rgb(52 52 52 / 0.96); }
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding-inline: 10px;
+  border-radius: 10px;
+  font-size: var(--text-body, 14px);
+  line-height: 20px;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  transition: background-color 120ms ease;
+}
+.menu-item:focus-visible,
+.menu-item[data-active] { background-color: rgb(255 255 255 / 0.14); }
+@media (hover: hover) and (pointer: fine) {
+  .menu-item:hover { background-color: rgb(255 255 255 / 0.14); }
+}
+.menu-item:active:not([aria-disabled="true"]) { background-color: rgb(255 255 255 / 0.2); }
+.menu-item[data-tone="danger"] { color: #ffb4b4; }
+.menu-item[aria-disabled="true"] { cursor: default; color: rgb(255 255 255 / 0.4); background-color: transparent; }
+.menu-item[aria-selected="true"] { font-weight: 500; }
+.menu-item-icon { width: 16px; height: 16px; flex-shrink: 0; }
+/* Conditionally-mounted lists (Dropdown.jsx) pop in the same way .menu-pop does. */
+@keyframes menu-in { from { opacity: 0; transform: scale(0.96) translateY(-4px); } }
+.menu-in { animation: menu-in var(--duration-base) var(--ease-out); }
+@media (prefers-reduced-motion: reduce) { .menu-in { animation-name: enter-fade; animation-duration: var(--duration-fast); } }
+.menu-separator { height: 1px; margin: 4px 10px; background-color: rgb(255 255 255 / 0.12); }
+.menu-chevron[data-open] { transform: rotate(180deg); }
+
+/* Page sections on route mount: 8px rise + fade, 50ms stagger via --enter-index.
+   `backwards` fill only — no lingering transform afterwards (keeps fixed/sticky children sane). */
+@keyframes enter-rise {
+  from { opacity: 0; transform: translateY(8px); }
+}
+@keyframes enter-fade {
+  from { opacity: 0; }
+}
+.enter-rise {
+  animation: enter-rise var(--duration-slow) var(--ease-out) backwards;
+  animation-delay: calc(var(--enter-index, 0) * 50ms);
+}
+
+/* Reduced motion: keep fades (they aid comprehension), drop movement & scale.
+   Overrides the global 1ms clamp in index.css for these fades only. */
+@media (prefers-reduced-motion: reduce) {
+  .press:active { transform: none; }
+  .menu-pop { transform: none !important; transition-property: opacity, visibility !important; transition-duration: var(--duration-fast), 0s !important; }
+  .menu-chevron { transition: none !important; }
+  .enter-rise { animation-name: enter-fade; animation-duration: var(--duration-fast) !important; animation-delay: 0s; }
+}
+
+/* Form feedback (Account page) — occasional, state indication.
+   .status-fade: "Changes saved" fades in/out (transition, so re-saves retarget).
+   .field-message: hint/error eases in from 2px above when it appears. */
+.status-fade { opacity: 0; transition: opacity var(--duration-base) var(--ease-out); }
+.status-fade[data-visible] { opacity: 1; }
+
+@keyframes field-message-in {
+  from { opacity: 0; transform: translateY(-2px); }
+}
+.field-message { animation: field-message-in var(--duration-base) var(--ease-out); }
+
+@media (prefers-reduced-motion: reduce) {
+  .status-fade { transition-duration: var(--duration-fast) !important; }
+  .field-message { animation-name: enter-fade; animation-duration: var(--duration-fast) !important; }
+}
+
+/* Tab panel switch — frequent, so a near-imperceptible 120ms fade (no movement). */
+.tab-fade { animation: enter-fade var(--duration-fast) var(--ease-out); }
+
+/* Seating Chart cards (Figma 191:11987).
+   - Preview eases up 2% on hover: tens of times a day, so subtle; fine pointers only.
+   - .seat-card-in: a created/duplicated/restored card pops in where it lands (spatial
+     consistency) — 0.97 → 1 + fade, 220ms. Never from scale(0).
+   - [data-removing]: deleted card fades + shrinks to 0.96 in 160ms (transition, so it
+     retargets cleanly), then the grid closes the gap. */
+.seat-card {
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+.seat-card[data-removing] { opacity: 0; transform: scale(0.96); }
+
+.seat-card-preview { transition: transform var(--duration-slow) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .seat-card:hover .seat-card-preview { transform: scale(1.02); }
+}
+
+@keyframes seat-card-in {
+  from { opacity: 0; transform: scale(0.97); }
+}
+.seat-card-in { animation: seat-card-in 220ms var(--ease-out); }
+
+/* Blank chart preview: the faint layout grid from the Figma canvas. */
+.seat-card-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--border-default) 45%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--border-default) 45%, transparent) 1px, transparent 1px);
+  background-size: 12px 12px;
+  background-position: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seat-card { transition-property: opacity !important; transition-duration: var(--duration-fast) !important; }
+  .seat-card[data-removing] { transform: none; }
+  .seat-card:hover .seat-card-preview { transform: none; }
+  .seat-card-in { animation-name: enter-fade; animation-duration: var(--duration-fast) !important; }
+}
+
+/* Toast (Toast.jsx) — occasional, state indication. Drops 8px from the top edge it is
+   anchored to + fades in 220ms; leaves the same way in 160ms. Transitions (not keyframes)
+   so a dismiss during entry retargets instead of restarting. */
+.toast {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+.toast[data-open] {
+  opacity: 1;
+  transform: none;
+  transition-duration: 220ms;
+}
+
+/* Switch (Switch.jsx) — toggled often, so a quick 150ms slide; colour eases with it.
+   Pressing stretches the thumb toward its destination (iOS-style feedback). */
+.switch-thumb {
+  transform-origin: left center;
+  transition: transform 150ms var(--ease-out);
+}
+.switch-track[data-checked] .switch-thumb { transform: translateX(16px); transform-origin: right center; }
+.switch-track:active:not(:disabled) .switch-thumb { transform: scaleX(1.18); }
+.switch-track[data-checked]:active:not(:disabled) .switch-thumb { transform: translateX(16px) scaleX(1.18); }
+.switch-track { transition: background-color 150ms ease, box-shadow 150ms ease; }
+
+/* Create-event wizard step swap: 12px slide in the direction of travel + fade. */
+@keyframes step-in-forward { from { opacity: 0; transform: translateX(12px); } }
+@keyframes step-in-back { from { opacity: 0; transform: translateX(-12px); } }
+.step-in { animation: step-in-forward 240ms var(--ease-out); }
+.step-in[data-dir="back"] { animation-name: step-in-back; }
+
+/* Stepper: the glass fill fades in when a step is reached; a finished step's number gives way
+   to a check (scale 0.6 → 1); the divider after it fills left → right (on-screen movement:
+   ease-in-out). */
+.step-dot-fill { opacity: 0; transition: opacity 200ms var(--ease-out); }
+.step-dot:not([data-state="upcoming"]) .step-dot-fill { opacity: 1; }
+.step-num { transition: opacity 150ms var(--ease-out), color 150ms ease; }
+.step-dot:not([data-state="upcoming"]) .step-num { color: white; }
+.step-dot[data-state="complete"] .step-num { opacity: 0; }
+.step-check { opacity: 0; transform: scale(0.6); transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out); }
+.step-dot[data-state="complete"] .step-check { opacity: 1; transform: none; transition-delay: 120ms; }
+.step-progress { transform: scaleX(0); transform-origin: left center; transition: transform 320ms cubic-bezier(0.645, 0.045, 0.355, 1); }
+.step-progress[data-filled] { transform: scaleX(1); }
+
+/* Banner drop zone: the image tile lifts toward the cursor while a file is dragged over. */
+.dropzone-tile { transition: transform 200ms var(--ease-out), border-color 150ms ease; }
+.dropzone[data-dragging] .dropzone-tile { transform: translateY(-3px) scale(1.08); border-color: var(--primary); }
+@media (hover: hover) and (pointer: fine) {
+  .dropzone:not([data-dragging]):hover .dropzone-tile { transform: translateY(-1px); }
+}
+
+/* Events list: the row you just created settles in with a brief highlight (rare → can linger). */
+@keyframes row-highlight {
+  0%, 45% { border-color: color-mix(in oklch, var(--primary) 55%, transparent); box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 15%, transparent); }
+  100% { border-color: var(--border-default); box-shadow: 0 0 0 4px transparent; }
+}
+.row-new > * { animation: row-highlight 2400ms ease 250ms backwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .toast { transform: none !important; transition-property: opacity !important; transition-duration: var(--duration-fast) !important; }
+  .switch-thumb { transition-duration: var(--duration-fast) !important; }
+  .switch-track:active .switch-thumb { transform: none !important; }
+  .switch-track[data-checked] .switch-thumb { transform: translateX(16px) !important; }
+  .step-in, .step-in[data-dir="back"] { animation-name: enter-fade; animation-duration: var(--duration-fast) !important; }
+  .step-check { transform: none; }
+  .step-progress { transition: none !important; }
+  .dropzone-tile { transform: none !important; }
+  .row-new > * { animation: none; }
+}
+
+/* Modal (Modal.jsx) — occasional. Centred dialog, so it grows from the centre: 0.96 → 1 +
+   fade, 220ms in / 160ms out (exits a little quicker). Backdrop fades on the same clock. */
+.modal::backdrop {
+  background-color: rgb(0 0 0 / 0.3);
+  opacity: 0;
+  transition: opacity 160ms var(--ease-out);
+}
+.modal[data-visible]::backdrop { opacity: 1; transition-duration: 220ms; }
+.modal-panel {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+.modal[data-visible] .modal-panel { opacity: 1; transform: none; transition-duration: 220ms; }
+
+/* Payout success (WithdrawModal.jsx) — rare, celebratory: the receipt card rises in, its bars
+   fill 40ms apart, then the check badge pops; copy and summary follow. */
+/* (Tailwind's -translate-x-1/2 uses the separate `translate` property, so these only touch transform.) */
+@keyframes success-card-in { from { opacity: 0; transform: translateY(24px); } }
+@keyframes success-bar-in { from { opacity: 0; transform: scaleX(0.6); } }
+@keyframes success-badge-in {
+  0% { opacity: 0; transform: scale(0.4); }
+  70% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.success-card { animation: success-card-in 360ms var(--ease-out) backwards; }
+.success-bar { transform-origin: left center; animation: success-bar-in 260ms var(--ease-out) backwards; animation-delay: calc(140ms + var(--bar-index, 0) * 40ms); }
+.success-badge { animation: success-badge-in 420ms var(--ease-out) 380ms backwards; }
+.success-copy { animation: enter-rise var(--duration-slow) var(--ease-out) 200ms backwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-panel { transform: none !important; }
+  .success-card, .success-bar, .success-badge, .success-copy { animation-name: enter-fade; animation-duration: var(--duration-fast); animation-delay: 0s; }
+}
+
+
+/* Ticket List empty state (TicketList.jsx): the two ticket outlines drift into place — the back
+   one swings to its −16° tilt, the front one rises — first paint only (rare → small delight). */
+@keyframes ticket-back-in { from { opacity: 0; transform: rotate(10deg) translateY(10px); } }
+@keyframes ticket-front-in { from { opacity: 0; transform: translateY(18px); } }
+.ticket-back { animation: ticket-back-in 520ms var(--ease-out) 80ms backwards; }
+.ticket-front { animation: ticket-front-in 440ms var(--ease-out) 200ms backwards; }
+
+/* Table row just added (Ticket List): a soft tint that holds briefly, then fades. */
+@keyframes row-flash {
+  0%, 40% { background-color: color-mix(in oklch, var(--primary) 10%, transparent); }
+  100% { background-color: transparent; }
+}
+.row-flash { animation: enter-rise var(--duration-slow) var(--ease-out) backwards, row-flash 2200ms ease 250ms backwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ticket-back, .ticket-front { animation-name: enter-fade; animation-duration: var(--duration-fast); }
+  .row-flash { animation: row-flash 2200ms ease 250ms backwards; }
+}
+
+/* Date picker (DatePicker.jsx) — month grid slides 8px the way you paged; the chosen day's
+   white fill eases in; the time column fades out at its bottom edge like the reference. */
+@keyframes cal-next { from { opacity: 0; transform: translateX(8px); } }
+@keyframes cal-prev { from { opacity: 0; transform: translateX(-8px); } }
+.cal-slide[data-slide="next"] { animation: cal-next 180ms var(--ease-out); }
+.cal-slide[data-slide="prev"] { animation: cal-prev 180ms var(--ease-out); }
+.cal-day { transition: background-color 120ms ease, color 120ms ease; }
+.cal-day[data-selected] { background-color: white; color: var(--color-neutral-900); font-weight: 500; }
+.cal-day[data-selected]:hover { background-color: rgb(255 255 255 / 0.9); }
+.cal-day[data-selected] > span { background-color: var(--color-blue-600); }
+.cal-time-list {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.25) transparent;
+  mask-image: linear-gradient(to bottom, black calc(100% - 48px), transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cal-slide[data-slide] { animation: enter-fade var(--duration-fast); }
+}
+
+/* E-Voucher empty state (Vouchers.jsx): the voucher rises in, then its barcode wipes in from the
+   left like it's being printed — first paint only (rare → small delight). */
+@keyframes voucher-rise { from { opacity: 0; transform: translateY(14px); } }
+@keyframes voucher-print { from { clip-path: inset(0 100% 0 0); } }
+.voucher-rise { animation: voucher-rise 460ms var(--ease-out) 60ms backwards; }
+.voucher-barcode { animation: voucher-print 520ms cubic-bezier(0.645, 0.045, 0.355, 1) 360ms backwards; }
+
+/* "Manage e-voucher →": the arrow nudges toward where the button goes (hover, fine pointers). */
+.voucher-arrow { transition: transform 150ms var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .voucher-manage:hover .voucher-arrow { transform: translateX(2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voucher-rise { animation-name: enter-fade; animation-duration: var(--duration-fast); }
+  .voucher-barcode { animation: none; }
+  .voucher-manage:hover .voucher-arrow { transform: none; }
+}

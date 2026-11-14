@@ -1,0 +1,24 @@
+@import "tailwindcss";
+@import "./tokens/colors.css";
+@import "./tokens/semantic.css";
+@import "./tokens/typography.css";
+@import "./tokens/spacing.css";
+@import "./tokens/layout.css";
+@import "./components.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  /* NOTE: design.md's "cv11","ss01" feature settings are intentionally not applied —
+     they swap Inter glyphs (single-storey a, open digits) and would deviate from Figma. */
+  html { font-family: var(--font-sans); }
+  body {
+    @apply bg-app text-fg text-body antialiased;
+  }
+  *:focus-visible { outline: none; }
+  ::selection { background: var(--primary-subtle); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+  }
+}

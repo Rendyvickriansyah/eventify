@@ -1,0 +1,12 @@
+@theme {
+  --breakpoint-sm: 40rem;   /* 640  */
+  --breakpoint-md: 48rem;   /* 768  */
+  --breakpoint-lg: 64rem;   /* 1024 — sidebar becomes permanent */
+  --breakpoint-xl: 80rem;   /* 1280 */
+  --breakpoint-2xl: 90rem;  /* 1440 — Figma frame */
+
+  --width-sidebar: 16rem;            /* 256 — Figma Sidebar */
+  --width-sidebar-collapsed: 4.5rem; /* 72 */
+  --height-navbar: 4.5rem;           /* 72 — Figma Header */
+  --width-content-max: 90rem;        /* 1440 */
+}

@@ -1,0 +1,165 @@
+/*
+ * Semantic colors — the ONLY color layer used by components.
+ * Values follow the Eventify Figma file (node 290:29550): pure black text with
+ * opacity steps, black/10% hairlines, gray-100 for selected states, green for success.
+ */
+:root {
+  /* Background & surface */
+  --bg-app:            var(--color-gray-25);
+  --bg-surface:        var(--color-white);
+  --bg-surface-muted:  var(--color-gray-100);
+  --bg-surface-hover:  var(--color-gray-50);
+  --bg-media:          var(--color-neutral-250);
+  --bg-overlay:        rgb(0 0 0 / 0.4);
+
+  /* Text — Figma uses black at 100 / 80 / 70 / 60 / 50 % */
+  --fg-default:        var(--color-black);
+  --fg-strong:         rgb(0 0 0 / 0.8);
+  --fg-muted:          rgb(0 0 0 / 0.7);
+  --fg-soft:           rgb(0 0 0 / 0.6);
+  --fg-subtle:         rgb(0 0 0 / 0.5);
+  --fg-inverse:        var(--color-white);
+  --fg-disabled:       rgb(0 0 0 / 0.3);
+
+  /* Border */
+  --border-default:    rgb(0 0 0 / 0.1);
+  --border-strong:     rgb(0 0 0 / 0.2);
+  --border-focus:      var(--color-blue-500);
+
+  /* Brand */
+  --primary:           var(--color-blue-600);
+  --primary-hover:     var(--color-blue-700);
+  --primary-active:    var(--color-blue-800);
+  --primary-subtle:    var(--color-blue-50);
+  --primary-fg:        var(--color-white);
+  --primary-subtle-fg: var(--color-blue-700);
+
+  /* Status */
+  --success:           var(--color-green-600);
+  --success-subtle:    var(--color-green-50);
+  --success-fg:        var(--color-green-700);
+  --success-border:    var(--color-green-800);
+  --warning:           var(--color-amber-500);
+  --warning-subtle:    var(--color-amber-50);
+  --warning-fg:        var(--color-amber-700);
+  --warning-border:    var(--color-amber-800);
+  --danger:            var(--color-red-600);
+  --danger-hover:      var(--color-red-700);
+  --danger-subtle:     var(--color-red-50);
+  --danger-fg:         var(--color-red-700);
+  --danger-border:     var(--color-red-800);
+  --info:              var(--color-blue-500);
+  --info-subtle:       var(--color-blue-50);
+  --info-fg:           var(--color-blue-700);
+  --info-border:       var(--color-blue-800);
+
+  /* Sidebar */
+  --sidebar-bg:              var(--color-white);
+  --sidebar-item-hover:      var(--color-gray-50);
+  --sidebar-item-active:     var(--color-gray-100);
+  --sidebar-item-active-fg:  var(--color-black);
+
+  /* Chart (series order) */
+  --chart-1: var(--color-green-600);
+  --chart-2: var(--color-blue-500);
+  --chart-3: var(--color-amber-500);
+  --chart-4: var(--color-purple-500);
+  --chart-5: var(--color-pink-500);
+  --chart-6: var(--color-orange-500);
+}
+
+.dark {
+  --bg-app:            var(--color-neutral-950);
+  --bg-surface:        var(--color-neutral-900);
+  --bg-surface-muted:  var(--color-neutral-800);
+  --bg-surface-hover:  rgb(255 255 255 / 0.04);
+  --bg-media:          var(--color-neutral-700);
+
+  --fg-default:        var(--color-white);
+  --fg-strong:         rgb(255 255 255 / 0.8);
+  --fg-muted:          rgb(255 255 255 / 0.7);
+  --fg-soft:           rgb(255 255 255 / 0.6);
+  --fg-subtle:         rgb(255 255 255 / 0.5);
+  --fg-inverse:        var(--color-black);
+  --fg-disabled:       rgb(255 255 255 / 0.3);
+
+  --border-default:    rgb(255 255 255 / 0.1);
+  --border-strong:     rgb(255 255 255 / 0.2);
+
+  --primary:           var(--color-blue-500);
+  --primary-hover:     var(--color-blue-400);
+  --primary-subtle:    rgb(21 93 252 / 0.15);
+  --primary-subtle-fg: var(--color-blue-300);
+
+  --success-subtle:    rgb(0 166 62 / 0.15);
+  --success-fg:        var(--color-green-400);
+  --success-border:    var(--color-green-600);
+  --warning-subtle:    rgb(254 154 0 / 0.15);
+  --warning-fg:        var(--color-amber-400);
+  --danger-subtle:     rgb(231 0 11 / 0.15);
+  --danger-fg:         var(--color-red-400);
+
+  --sidebar-bg:              var(--color-neutral-900);
+  --sidebar-item-hover:      rgb(255 255 255 / 0.04);
+  --sidebar-item-active:     var(--color-neutral-800);
+  --sidebar-item-active-fg:  var(--color-white);
+}
+
+/* Register with Tailwind → bg-surface, text-fg-muted, border-default, … */
+@theme inline {
+  --color-app: var(--bg-app);
+  --color-surface: var(--bg-surface);
+  --color-surface-muted: var(--bg-surface-muted);
+  --color-surface-hover: var(--bg-surface-hover);
+  --color-media: var(--bg-media);
+  --color-overlay: var(--bg-overlay);
+
+  --color-fg: var(--fg-default);
+  --color-fg-strong: var(--fg-strong);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-soft: var(--fg-soft);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-fg-inverse: var(--fg-inverse);
+  --color-fg-disabled: var(--fg-disabled);
+
+  --color-default: var(--border-default);
+  --color-strong: var(--border-strong);
+  --color-focus: var(--border-focus);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-primary-subtle: var(--primary-subtle);
+  --color-primary-fg: var(--primary-fg);
+  --color-primary-subtle-fg: var(--primary-subtle-fg);
+
+  --color-success: var(--success);
+  --color-success-subtle: var(--success-subtle);
+  --color-success-fg: var(--success-fg);
+  --color-success-border: var(--success-border);
+  --color-warning: var(--warning);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-warning-fg: var(--warning-fg);
+  --color-warning-border: var(--warning-border);
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-subtle: var(--danger-subtle);
+  --color-danger-fg: var(--danger-fg);
+  --color-danger-border: var(--danger-border);
+  --color-info: var(--info);
+  --color-info-subtle: var(--info-subtle);
+  --color-info-fg: var(--info-fg);
+  --color-info-border: var(--info-border);
+
+  --color-sidebar: var(--sidebar-bg);
+  --color-sidebar-hover: var(--sidebar-item-hover);
+  --color-sidebar-active: var(--sidebar-item-active);
+  --color-sidebar-active-fg: var(--sidebar-item-active-fg);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+}

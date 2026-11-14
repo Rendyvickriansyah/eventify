@@ -1,0 +1,26 @@
+@theme {
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Display — large numbers */
+  --text-display: 2.25rem;  --text-display--line-height: 2.75rem;  --text-display--letter-spacing: -0.02em;  --text-display--font-weight: 600;
+  /* Heading */
+  --text-h1: 1.875rem;      --text-h1--line-height: 2.375rem;      --text-h1--letter-spacing: -0.02em;      --text-h1--font-weight: 600;
+  --text-h2: 1.5rem;        --text-h2--line-height: 2rem;          --text-h2--letter-spacing: -0.015em;     --text-h2--font-weight: 600;
+  --text-h3: 1.25rem;       --text-h3--line-height: 1.75rem;       --text-h3--letter-spacing: -0.01em;      --text-h3--font-weight: 600;
+  --text-h4: 1.125rem;      --text-h4--line-height: 1.75rem;       --text-h4--font-weight: 600;
+  /* Metric value — Figma "text-2xl/semibold" 24/32, 600, tracking 0 */
+  --text-metric: 1.5rem;    --text-metric--line-height: 2rem;      --text-metric--font-weight: 600;
+  /* Body */
+  --text-body-lg: 1rem;     --text-body-lg--line-height: 1.5rem;   /* Figma text-base 16/24 */
+  --text-body: 0.875rem;    --text-body--line-height: 1.25rem;     /* Figma text-sm   14/20 */
+  --text-body-sm: 0.8125rem; --text-body-sm--line-height: 1.125rem;
+  /* Label & caption */
+  --text-label: 0.875rem;   --text-label--line-height: 1.25rem;    --text-label--font-weight: 500;
+  --text-label-sm: 0.75rem; --text-label-sm--line-height: 1rem;    --text-label-sm--font-weight: 500; /* Figma text-xs/medium */
+  --text-caption: 0.75rem;  --text-caption--line-height: 1rem;
+  --text-overline: 0.6875rem; --text-overline--line-height: 1rem;  --text-overline--letter-spacing: 0.06em; --text-overline--font-weight: 600;
+
+  /* Text shadow — Figma "View More" button label */
+  --text-shadow-button: 0 1.392px 2.089px rgb(0 0 0 / 0.05);
+}
