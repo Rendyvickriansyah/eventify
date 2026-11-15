@@ -20,6 +20,9 @@ const aligns = {
  *   emptyState?: React.ReactNode,
  *   rowClassName?: (row: any, index: number) => string | undefined,
  *   rowStyle?: (row: any, index: number) => React.CSSProperties | undefined,
+ *   onRowClick?: (row: any) => void,          // whole row opens something (Enter / Space too)
+ *   rowLabel?: (row: any) => string,          // accessible name for a clickable row
+ *   activeRow?: string | number | null,       // rowKey of the row whose detail is open
  *   className?: string,
  * }} props
  */
@@ -32,6 +35,9 @@ export function Table({
   emptyState = 'No data yet.',
   rowClassName,
   rowStyle,
+  onRowClick,
+  rowLabel,
+  activeRow = null,
   className,
   ...props
 }) {
@@ -79,7 +85,20 @@ export function Table({
 
             {!loading &&
               data.map((row, index) => (
-                <tr key={rowKey(row, index)} className={cn('transition-colors duration-150 hover:bg-surface-hover', rowClassName?.(row, index))} style={rowStyle?.(row, index)}>
+                <tr
+                  key={rowKey(row, index)}
+                  className={cn('transition-colors duration-150 hover:bg-surface-hover', onRowClick && 'table-row-link', rowClassName?.(row, index))}
+                  style={rowStyle?.(row, index)}
+                  {...(onRowClick && {
+                    tabIndex: 0,
+                    'aria-label': rowLabel?.(row),
+                    'data-active': activeRow === rowKey(row, index) || undefined,
+                    onClick: () => onRowClick(row),
+                    onKeyDown: (e) => {
+                      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onRowClick(row) }
+                    },
+                  })}
+                >
                   {columns.map((col) => {
                     const content = col.render ? col.render(row) : row[col.key]
                     return (

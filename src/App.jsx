@@ -8,6 +8,10 @@ import { Toaster } from '@/components/ui/Toast'
 import SeatingChart from '@/pages/SeatingChart'
 import CreateSeatingChart from '@/pages/CreateSeatingChart'
 import SeatingEditor from '@/pages/SeatingEditor'
+import Attendees from '@/pages/Attendees'
+import PromoCodes from '@/pages/PromoCodes'
+import PromoCodeDetail from '@/pages/PromoCodeDetail'
+import PromoCodeForm from '@/pages/PromoCodeForm'
 import TicketList from '@/pages/TicketList'
 import CreateTicket from '@/pages/CreateTicket'
 import CreateAddOn from '@/pages/CreateAddOn'
@@ -39,6 +43,13 @@ function Route({ route }) {
     if (sub === 'new') return <CreateSeatingChart eventId={id} />
     if (sub) return <SeatingEditor eventId={id} chartId={sub} />
     return <SeatingChart eventId={id} />
+  }
+  if (page === 'event' && id && section === 'attendees' && getEventDetail(id)) return <Attendees eventId={id} />
+  if (page === 'event' && id && section === 'promo' && getEventDetail(id)) {
+    if (sub === 'new') return <PromoCodeForm eventId={id} />
+    if (sub && action === 'edit') return <PromoCodeForm eventId={id} codeId={sub} />
+    if (sub) return <PromoCodeDetail eventId={id} codeId={sub} />
+    return <PromoCodes eventId={id} />
   }
   if (page === 'event' && id && section === 'vouchers' && getEventDetail(id)) {
     if (sub) return <VoucherEditor eventId={id} voucherId={sub === 'new' ? null : sub} />

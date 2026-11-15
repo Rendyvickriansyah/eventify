@@ -14,8 +14,7 @@ import { getEventDetail, eventNavigation } from '@/data/eventDetail'
 import { useTickets, removeTicket, duplicateTicket, takeJustCreatedTicket } from '@/data/ticketStore'
 import { useAddOns, removeAddOn, duplicateAddOn, demoAddOns, takeJustCreatedAddOn } from '@/data/addonStore'
 import moreIcon from '@/assets/icons/more-horizontal.svg'
-import ticketBack from '@/assets/illustrations/ticket-back.svg'
-import ticketFront from '@/assets/illustrations/ticket-front.svg'
+import { TicketIllustration } from '@/components/data/TicketIllustration'
 
 const tabs = [
   { id: 'types', label: 'Ticket Type' },
@@ -206,25 +205,5 @@ function Centered({ children }) {
  * Figma empty-state "Slot" (279 × 248): two ticket outlines — the back one tilted −16.11°, the
  * front one flat and lower. They drift into place on first paint (rare moment, slight delight).
  */
-function TicketIllustration() {
-  return (
-    <div aria-hidden className="relative h-62 w-[279px] shrink-0 overflow-hidden">
-      <img
-        src={ticketBack}
-        alt=""
-        width="244.264"
-        height="171.765"
-        className="ticket-back absolute top-[40.6px] left-[17.3px] block h-[171.765px] w-[244.264px] max-w-none rotate-[-16.11deg] dark:invert"
-      />
-      <img
-        src={ticketFront}
-        alt=""
-        width="244.264"
-        height="171.765"
-        className="ticket-front absolute top-[77.6px] left-[17.25px] block h-[171.765px] w-[244.264px] max-w-none dark:invert"
-      />
-    </div>
-  )
-}
 
 export default TicketList

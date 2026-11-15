@@ -274,6 +274,7 @@ export function getEventDetail(id) {
     id,
     demo: true,
     title: event.title,
+    date: event.date,
     status,
     when: `${longDate.format(new Date(`${event.date}T00:00:00Z`))} at 7:00 PM`,
     metrics: [
