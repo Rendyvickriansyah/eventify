@@ -114,7 +114,8 @@ export function ImageUpload({ label, value, onChange, optional = false, selectBu
 }
 
 /** Resize to ≤ 1200px wide and re-encode as JPEG (~100–200KB) for localStorage. */
-async function downscale(file, maxWidth = 1200) {
+/** Reads an image file and re-encodes it as a JPEG data URL no wider than `maxWidth`. */
+export async function downscale(file, maxWidth = 1200) {
   const bitmap = await createImageBitmap(file)
   const scale = Math.min(1, maxWidth / bitmap.width)
   const canvas = document.createElement('canvas')

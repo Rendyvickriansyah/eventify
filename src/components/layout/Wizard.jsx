@@ -26,12 +26,15 @@ import dividerIcon from '@/assets/icons/stepper-divider.svg'
  *   note?: React.ReactNode,                          // footer, left — context for this step
  *   onBack?: () => void,                             // shows "Back" when given
  *   submitLabel: string, busy?: boolean, busyLabel?: string,
+ *   closeVariant?: 'round' | 'bare',                 // default: round with steps, bare without
+ *   fullBleed?: boolean,                             // children fill the body (editors) instead of the 650px column
  *   children: React.ReactNode,                       // the current step's content
  * }} props
  */
 export function WizardShell({
   title, steps, current = 0, direction = 'forward', onClose, closeLabel = 'Close',
-  formId, formRef, onSubmit, note, onBack, submitLabel, busy = false, busyLabel = 'Saving…', children,
+  formId, formRef, onSubmit, note, onBack, submitLabel, busy = false, busyLabel = 'Saving…',
+  closeVariant = steps ? 'round' : 'bare', fullBleed = false, children,
 }) {
   return (
     <div className="flex h-dvh flex-col bg-surface">
@@ -45,7 +48,7 @@ export function WizardShell({
             aria-label={closeLabel}
             className={cn(
               'press flex cursor-pointer items-center justify-center outline-none transition-[background-color,border-color,transform] duration-150 ease-out focus-visible:ring-4 focus-visible:ring-primary/20',
-              steps
+              closeVariant === 'round'
                 ? 'size-9 rounded-full border border-default bg-[#fcfdfd] shadow-xs hover:border-strong hover:bg-surface-muted dark:bg-surface'
                 : /* Figma "Setup New Add-ons": bare 16px close icon */ '-mr-2 size-8 rounded-md hover:bg-surface-muted',
             )}
@@ -55,11 +58,17 @@ export function WizardShell({
         </div>
       </header>
 
-      <form ref={formRef} id={formId} noValidate onSubmit={onSubmit} className="flex min-h-0 flex-1 justify-center overflow-y-auto px-4 py-10 md:py-14">
-        <div key={steps ? Math.min(current, steps.length - 2) : 0} data-dir={direction} className="step-in flex h-max w-full max-w-162.5 flex-col gap-8">
+      {fullBleed ? (
+        <form ref={formRef} id={formId} noValidate onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col md:flex-row">
           {children}
-        </div>
-      </form>
+        </form>
+      ) : (
+        <form ref={formRef} id={formId} noValidate onSubmit={onSubmit} className="flex min-h-0 flex-1 justify-center overflow-y-auto px-4 py-10 md:py-14">
+          <div key={steps ? Math.min(current, steps.length - 2) : 0} data-dir={direction} className="step-in flex h-max w-full max-w-162.5 flex-col gap-8">
+            {children}
+          </div>
+        </form>
+      )}
 
       <footer className="flex shrink-0 items-center justify-between gap-4 border-t border-default px-4 py-2 md:px-8">
         <p className="hidden text-body text-fg-muted sm:block" aria-live="polite">{note}</p>

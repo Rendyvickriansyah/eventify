@@ -20,10 +20,13 @@ const EXIT_MS = 160
  *   title?: React.ReactNode,        // omit for a header with only the close button
  *   label?: string,                 // accessible name when there is no visible title
  *   footer?: React.ReactNode,
+ *   variant?: 'default' | 'glass',  // glass = the dark frosted surface of menus/dropdowns (.menu-surface)
+ *   size?: 'md' | 'lg',             // md 550px · lg 720px
  *   className?: string, children: React.ReactNode,
  * }} props
  */
-export function Modal({ open, onClose, title, label, footer, className, children }) {
+export function Modal({ open, onClose, title, label, footer, variant = 'default', size = 'md', className, children }) {
+  const glass = variant === 'glass'
   const ref = useRef(null)
   const titleId = useId()
   const [mounted, setMounted] = useState(open)
@@ -66,18 +69,27 @@ export function Modal({ open, onClose, title, label, footer, className, children
       data-visible={visible || undefined}
       onCancel={(e) => { e.preventDefault(); onClose() }}
       onClick={(e) => { if (e.target === ref.current) onClose() /* backdrop click */ }}
-      className="modal m-auto max-h-[calc(100dvh-32px)] w-[calc(100%-32px)] max-w-137.5 overflow-visible bg-transparent p-0"
+      className={cn('modal m-auto max-h-[calc(100dvh-32px)] w-[calc(100%-32px)] overflow-visible bg-transparent p-0', size === 'lg' ? 'max-w-180' : 'max-w-137.5')}
     >
-      <div className={cn('modal-panel flex max-h-[calc(100dvh-32px)] flex-col overflow-hidden rounded-lg bg-surface text-fg shadow-2xl', className)}>
+      <div
+        className={cn(
+          'modal-panel flex max-h-[calc(100dvh-32px)] flex-col overflow-hidden shadow-2xl',
+          glass ? 'modal-glass rounded-xl text-white' : 'rounded-lg bg-surface text-fg',
+          className,
+        )}
+      >
         <header className={cn('flex shrink-0 items-center gap-3 px-6 py-4', title ? 'justify-between' : 'justify-end')}>
-          {title && <h2 id={titleId} className="min-w-0 truncate text-h4 font-medium text-fg">{title}</h2>}
+          {title && <h2 id={titleId} className={cn('min-w-0 truncate text-h4 font-medium', glass ? 'text-white' : 'text-fg')}>{title}</h2>}
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="press -mr-1.5 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-md outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-surface-muted focus-visible:ring-4 focus-visible:ring-primary/20"
+            className={cn(
+              'press -mr-1.5 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-md outline-none transition-[background-color,transform] duration-150 ease-out focus-visible:ring-4',
+              glass ? 'hover:bg-white/10 focus-visible:ring-white/20' : 'hover:bg-surface-muted focus-visible:ring-primary/20',
+            )}
           >
-            <Icon src={closeIcon} className="size-6" />
+            <Icon src={closeIcon} className={cn('size-6', glass && 'invert dark:invert')} />
           </button>
         </header>
         <div className="min-h-0 flex-1 overflow-y-auto px-6">{children}</div>

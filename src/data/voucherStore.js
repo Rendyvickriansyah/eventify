@@ -4,14 +4,18 @@ import { createEventCollection } from '@/lib/localStore'
  * E-voucher templates per event (the ticket design attendees receive), persisted in
  * localStorage as { [eventId]: Voucher[] }.
  *
- * @typedef {{ id: string, name: string, ticketTypeId: string | null, sold: number,
- *   createdAt: string, updatedAt?: string }} Voucher
+ * @typedef {{ id: string, name: string, sold: number, createdAt: string, updatedAt?: string,
+ *   design?: { head: string, body: string, image: string | null } }} Voucher
+ *   `design` is the editor's content (Figma "Create New E-Voucher", node 305:29728).
  */
 const vouchers = createEventCollection('eventify:vouchers', 'vch')
 
 export const useVouchers = vouchers.use
 /** Saves a template; throws when storage is full or unavailable. */
 export const addVoucher = vouchers.add
+/** Saves edits to a template; throws when storage is full or unavailable. */
+export const updateVoucher = vouchers.update
+export const getVouchers = vouchers.get
 export const removeVoucher = vouchers.remove
 export const takeJustCreatedVoucher = vouchers.takeJustCreated
 

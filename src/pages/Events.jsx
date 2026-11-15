@@ -4,14 +4,14 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { TabsToolbar } from '@/components/layout/TabsToolbar'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { Icon } from '@/components/ui/Icon'
+import { toast } from '@/components/ui/Toast'
 import { EventListItem } from '@/components/data/EventListItem'
 import { navigation } from '@/data/navigation'
 import { headerActions } from '@/data/dashboard'
 import { eventsBreadcrumb, eventTabs } from '@/data/events'
 import { useStoredEvents, takeJustCreated } from '@/data/eventStore'
 import { useAllTickets, summarizeTickets } from '@/data/ticketStore'
-import calendarIcon from '@/assets/icons/calendar.svg'
+import eventsEmpty from '@/assets/illustrations/events-empty.svg'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
@@ -49,7 +49,7 @@ export function Events() {
     >
       <h1 className="sr-only">Events</h1>
 
-      <section role="tabpanel" id={`events-panel-${tab}`} aria-labelledby={`events-tab-${tab}`} className="px-4 py-6 md:px-8">
+      <section role="tabpanel" id={`events-panel-${tab}`} aria-labelledby={`events-tab-${tab}`} className={cn(events.length > 0 && 'px-4 py-6 md:px-8')}>
         {events.length > 0 ? (
           <ul className="flex flex-col gap-3">
             {events.map(({ id, banner, description, settings, createdAt, ...event }, i) => (
@@ -64,16 +64,33 @@ export function Events() {
             ))}
           </ul>
         ) : (
-          <div className="flex justify-center py-16">
+          <div className="flex min-h-[calc(100dvh-8.25rem)] items-center justify-center px-4 py-12">
             <EmptyState
               illustration={
-                <span aria-hidden className="flex size-12 items-center justify-center rounded-full border border-default bg-gray-50 dark:bg-surface-muted">
-                  <Icon src={calendarIcon} size="md" />
-                </span>
+                <div aria-hidden className="enter-rise flex h-62 w-[279px] shrink-0 items-center justify-center">
+                  <img src={eventsEmpty} alt="" width="279" height="247.377" className="block h-[247.377px] w-[279px] max-w-none" />
+                </div>
               }
-              title={tab === 'past' ? 'No past events' : 'No upcoming events'}
-              description={tab === 'past' ? 'Events appear here once their date has passed.' : 'Create your first event to start selling tickets.'}
-              actions={tab === 'past' ? null : <Button as="a" href="#/events/new" variant="glass" className="h-11 text-body-lg font-medium">Add New Event</Button>}
+              title={tab === 'past' ? 'No Past Events' : 'No Upcoming Events'}
+              description={
+                tab === 'past'
+                  ? 'Events will show up here once their date has passed.'
+                  : 'Create a new event to start selling tickets and managing registrations.'
+              }
+              actions={
+                tab === 'past' ? null : (
+                  <>
+                    <Button as="a" href="#/events/new" variant="glass" className="h-11 text-body-lg font-medium">Create New Event</Button>
+                    <Button
+                      variant="secondary"
+                      className="h-11 rounded-lg px-3 text-body-lg font-medium"
+                      onClick={() => toast.info('Import is coming soon', { description: 'For now, create each event with Create New Event.' })}
+                    >
+                      Import Event
+                    </Button>
+                  </>
+                )
+              }
             />
           </div>
         )}

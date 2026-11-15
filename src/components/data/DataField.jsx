@@ -8,7 +8,7 @@ export function DataField({ label, children, className, ...props }) {
   return (
     <div className={cn('flex min-w-0 flex-col items-start justify-center gap-1', className)} {...props}>
       <dt className="text-body whitespace-nowrap text-fg-muted">{label}</dt>
-      <dd className="flex max-w-full min-w-0 text-body text-fg tabular-nums">
+      <dd className="flex max-w-full min-w-0 text-body font-medium text-fg tabular-nums">
         {typeof children === 'string' ? <span className="truncate" title={children}>{children}</span> : children}
       </dd>
     </div>

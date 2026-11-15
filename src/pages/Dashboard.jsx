@@ -62,8 +62,8 @@ export function Dashboard() {
 
       <PageSection title="Insights" className="pt-4 pb-5">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {insights.map((metric) => (
-            <MetricCard key={metric.id} label={metric.label} value={metric.value} trend={metric.trend} />
+          {insights.map((metric, i) => (
+            <MetricCard key={metric.id} label={metric.label} value={metric.value} trend={metric.trend} countUp={150 + i * 80} />
           ))}
         </div>
       </PageSection>

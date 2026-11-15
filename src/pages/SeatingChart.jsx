@@ -6,12 +6,21 @@ import { Button } from '@/components/ui/Button'
 import { SeatingChartCard } from '@/components/data/SeatingChartCard'
 import { headerActions } from '@/data/dashboard'
 import { getEventDetail, eventNavigation } from '@/data/eventDetail'
-import { seatingChartsFor } from '@/data/seating'
+import { seatingChartsFor, getSavedSeatingCharts, addSeatingChart, removeSeatingChart, takeJustCreatedSeatingChart, hasSampleLayout, samplePreview, sampleSeed } from '@/data/seating'
 
 /** First-paint stagger (see `.enter-rise`); later additions enter on their own. */
 const enter = (index) => ({ '--enter-index': index })
 
-let draftCount = 0
+/** Saved charts (newest first) ahead of the sample layouts; the one just created pops in. */
+function initialCharts(eventId) {
+  const justCreated = takeJustCreatedSeatingChart()
+  const saved = [...getSavedSeatingCharts(eventId)].reverse().map((c) => ({
+    ...c, saved: true, image: samplePreview[c.id], editedAt: Date.parse(c.updatedAt ?? c.createdAt), added: c.id === justCreated,
+  }))
+  // A sample that has been opened (and so saved) shows once, as the saved chart
+  const savedIds = new Set(saved.map((c) => c.id))
+  return [...saved, ...seatingChartsFor().filter((c) => !savedIds.has(c.id))]
+}
 
 /**
  * Seating Chart — Figma "Seating Chart" (node 191:11987). Route: #/event/:id/seating.
@@ -22,7 +31,7 @@ let draftCount = 0
  */
 export function SeatingChart({ eventId }) {
   const event = getEventDetail(eventId)
-  const [charts, setCharts] = useState(seatingChartsFor)
+  const [charts, setCharts] = useState(() => initialCharts(eventId))
   const [removingId, setRemovingId] = useState(null)
   const [undo, setUndo] = useState(null) // { chart, index }
   const [announcement, setAnnouncement] = useState('')
@@ -30,9 +39,13 @@ export function SeatingChart({ eventId }) {
   const undoRef = useRef(null)
 
   const finishRemoval = useCallback(() => {
+    const chart = charts.find((c) => c.id === removingId)
+    if (chart?.saved) {
+      try { removeSeatingChart(eventId, chart.id) } catch { /* storage unavailable — list still updates */ }
+    }
     setCharts((list) => list.filter((c) => c.id !== removingId))
     setRemovingId(null)
-  }, [removingId])
+  }, [charts, removingId, eventId])
 
   // Move focus to Undo once the deleted card (and its focused menu trigger) is gone.
   useEffect(() => {
@@ -47,16 +60,14 @@ export function SeatingChart({ eventId }) {
     setCharts((list) => [...list.slice(0, index), { ...chart, added: true }, ...list.slice(index)])
   }
 
-  function create() {
-    draftCount += 1
-    const chart = { id: `draft-${Date.now()}`, name: draftCount === 1 ? 'Untitled Seating Chart' : `Untitled Seating Chart ${draftCount}`, editedAt: Date.now() }
-    insert(chart, 0)
-    setUndo(null)
-    setAnnouncement(`${chart.name} created`)
-  }
-
   function duplicate(chart) {
-    const copy = { ...chart, id: `${chart.id}-copy-${Date.now()}`, name: `Copy of ${chart.name}`, editedAt: Date.now() }
+    let copy = { ...chart, id: `${chart.id}-copy-${Date.now()}`, name: `Copy of ${chart.name}`, editedAt: Date.now() }
+    // Saved charts and samples copy as real charts (drawing included), so the copy opens too
+    const { id: _id, saved: _saved, added: _added, editedAt: _editedAt, createdAt: _createdAt, updatedAt: _updatedAt, image: _image, ...rest } = chart
+    const data = chart.saved ? rest : sampleSeed(chart.id)
+    if (data) {
+      try { copy = { ...copy, ...addSeatingChart(eventId, { ...data, name: copy.name }), saved: true } } catch { /* keep it in the list for this visit */ }
+    }
     insert(copy, charts.indexOf(chart) + 1)
     setAnnouncement(`${copy.name} created`)
   }
@@ -69,11 +80,19 @@ export function SeatingChart({ eventId }) {
   }
 
   function restore() {
-    insert(undo.chart, Math.min(undo.index, charts.length))
+    let chart = undo.chart
+    if (chart.saved) {
+      // Deleting removed it from storage — save it again (it gets a fresh id).
+      const { id: _id, saved: _saved, added: _added, editedAt: _editedAt, ...rest } = chart
+      try { chart = { ...chart, ...addSeatingChart(eventId, rest) } } catch { /* keep it in the list for this visit */ }
+    }
+    insert(chart, Math.min(undo.index, charts.length))
     setAnnouncement(`${undo.chart.name} restored`)
     setUndo(null)
   }
 
+  // Clicking a card opens it in the editor; the ⋯ menu holds the rest.
+  const editorHref = (chart) => (chart.saved || hasSampleLayout(chart.id) ? `#/event/${event.id}/seating/${chart.id}` : undefined)
   const menuItems = (chart) => [
     { id: 'duplicate', icon: Copy, label: 'Duplicate', onSelect: () => duplicate(chart) },
     { id: 'sep', type: 'separator' },
@@ -103,7 +122,7 @@ export function SeatingChart({ eventId }) {
             </>
           )}
         </p>
-        <Button variant="glass" onClick={create} className="h-11 shrink-0 text-body-lg font-medium">
+        <Button as="a" href={`#/event/${event.id}/seating/new`} variant="glass" className="h-11 shrink-0 text-body font-medium">
           Create Seating Chart
         </Button>
       </div>
@@ -116,6 +135,7 @@ export function SeatingChart({ eventId }) {
               key={chart.id}
               chart={chart}
               now={now}
+              href={editorHref(chart)}
               menuItems={menuItems(chart)}
               removing={chart.id === removingId}
               onExited={finishRemoval}

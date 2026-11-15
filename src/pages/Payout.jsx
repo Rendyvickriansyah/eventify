@@ -9,7 +9,7 @@ import { MetricCard } from '@/components/data/MetricCard'
 import { CardBrandLogo } from '@/components/data/CardBrandLogo'
 import { PayoutAccountTable, PayoutHistoryTable } from '@/components/data/PayoutTables'
 import { WithdrawModal } from '@/components/data/WithdrawModal'
-import { CountUp, CountUpText } from '@/components/ui/CountUp'
+import { CountUp } from '@/components/ui/CountUp'
 import { navigation } from '@/data/navigation'
 import { headerActions } from '@/data/dashboard'
 import { payoutBreadcrumb, balance, recentPeriod, payoutAccounts, payoutHistory } from '@/data/payout'
@@ -97,7 +97,7 @@ export function Payout() {
       <PageSection title="Recent Period" className="enter-rise pt-6 pb-6" style={enter(1)}>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {recentPeriod.map((metric, i) => (
-            <MetricCard key={metric.id} label={metric.label} value={<CountUpText text={metric.value} delay={150 + i * 80} />} trend={metric.trend} />
+            <MetricCard key={metric.id} label={metric.label} value={metric.value} trend={metric.trend} countUp={150 + i * 80} />
           ))}
         </div>
       </PageSection>

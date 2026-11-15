@@ -7,10 +7,8 @@ import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/components/ui/Toast'
 import { VoucherCard } from '@/components/data/VoucherCard'
-import { CreateVoucherModal } from '@/components/data/CreateVoucherModal'
 import { headerActions } from '@/data/dashboard'
 import { getEventDetail, eventNavigation } from '@/data/eventDetail'
-import { getTickets } from '@/data/ticketStore'
 import { useVouchers, demoVouchers, takeJustCreatedVoucher } from '@/data/voucherStore'
 import voucherBody from '@/assets/illustrations/voucher-body.svg'
 import voucherWindow from '@/assets/illustrations/voucher-window.svg'
@@ -30,20 +28,12 @@ import voucherStub from '@/assets/illustrations/voucher-stub.svg'
 export function Vouchers({ eventId }) {
   const event = getEventDetail(eventId)
   const stored = useVouchers(eventId)
-  const [creating, setCreating] = useState(false)
-  const [newId, setNewId] = useState(takeJustCreatedVoucher)
+  const [newId] = useState(takeJustCreatedVoucher)
+  const newHref = `#/event/${eventId}/vouchers/new`
 
   if (!event) return null // App only routes here for known events
 
   const templates = [...(demoVouchers[eventId] ?? []), ...stored]
-  const ticketTypes = [
-    ...(event.demo ? event.ticketTypes.map((t) => ({ id: `demo-${t.id}`, name: t.name })) : []),
-    ...getTickets(eventId).map((t) => ({ id: t.id, name: t.name })),
-  ]
-
-  const manage = (name) =>
-    toast.info('The e-voucher editor is coming soon', { description: `You'll be able to customise the layout and branding of “${name}” here.` })
-
   return (
     <DashboardLayout
       brand="Eventify"
@@ -52,7 +42,7 @@ export function Vouchers({ eventId }) {
       sidebarTop={<EventSwitcher eventId={event.id} title={event.title} section="vouchers" />}
       breadcrumb={[{ label: 'Events', href: '#/events' }, { label: event.title }]}
       actions={headerActions}
-      toolbar={<TabsToolbar action={<Button variant="glass" onClick={() => setCreating(true)}>Create New E-Voucher</Button>} />}
+      toolbar={<TabsToolbar action={<Button as="a" href={newHref} variant="glass">Create New E-Voucher</Button>} />}
     >
       <h1 className="sr-only">E-Voucher</h1>
 
@@ -64,7 +54,7 @@ export function Vouchers({ eventId }) {
             description="Design your first e-voucher template to get started. Customize the layout, add your branding, and attach it to any ticket type."
             actions={
               <>
-                <Button variant="glass" className="h-11 text-label" onClick={() => setCreating(true)}>Create E-Voucher</Button>
+                <Button as="a" href={newHref} variant="glass" className="h-11 text-label">Create E-Voucher</Button>
                 <Button
                   variant="secondary"
                   className="h-11 rounded-lg px-3 text-label"
@@ -80,19 +70,12 @@ export function Vouchers({ eventId }) {
         <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,318px),318px))] gap-4 px-4 py-8 md:px-10">
           {templates.map((t, i) => (
             <li key={t.id} className={cn('enter-rise', t.id === newId && 'row-new')} style={{ '--enter-index': Math.min(i, 8) }}>
-              <VoucherCard name={t.name} editedAt={t.updatedAt ?? t.createdAt} onManage={() => manage(t.name)} />
+              <VoucherCard name={t.name} editedAt={t.updatedAt ?? t.createdAt} onManage={() => { window.location.hash = `#/event/${eventId}/vouchers/${t.id}` }} />
             </li>
           ))}
         </ul>
       )}
 
-      <CreateVoucherModal
-        open={creating}
-        onClose={() => setCreating(false)}
-        eventId={eventId}
-        ticketTypes={ticketTypes}
-        onCreated={(v) => setNewId(v.id)}
-      />
     </DashboardLayout>
   )
 }

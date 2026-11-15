@@ -1,0 +1,30 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="313.687" height="201.361" viewBox="0 0 313.687 201.361" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="Field">
+<rect x="0.489626" y="0.777148" width="312.708" height="200.094" stroke="white" stroke-width="0.979252"/>
+<g id="Vector 180">
+<path d="M313.103 0.489258V200.42H0.557684V0.489258H313.103Z" fill="#54AB49"/>
+<path d="M313.103 0.489258V200.42H0.557684V0.489258H313.103Z" fill="url(#pattern0_0_349)"/>
+<path d="M313.103 0.489258V200.42H0.557684V0.489258H313.103Z" stroke="white" stroke-width="0.979252"/>
+</g>
+<path id="Vector" d="M47.9841 79.116C68.3852 97.885 57.1238 115.577 47.9841 123.019M47.9841 79.116V41.4148H0.00078125M47.9841 79.116V123.019M47.9841 123.019V162.189H0.00078125M0.327199 74.7094H17.7905V128.568H0.327199" stroke-width="1.30567" stroke="white"/>
+<path id="Vector_2" d="M265.57 124.489C245.169 105.72 256.431 88.0278 265.57 80.5854M265.57 124.489L265.57 162.19L313.554 162.19M265.57 124.489L265.57 80.5854M265.57 80.5854L265.57 41.4154L313.554 41.4154M313.227 128.895L295.764 128.895L295.764 75.0363L313.227 75.0363" stroke-width="1.30567" stroke="white"/>
+<g id="Frame 1116605673">
+<mask id="stroke0_0_349" fill="white">
+<path d="M185.566 100.825C185.566 116.689 172.706 129.549 156.842 129.549C140.977 129.549 128.117 116.689 128.117 100.825C128.117 84.9605 140.977 72.1 156.842 72.1C172.706 72.1 185.566 84.9605 185.566 100.825Z"/>
+</mask>
+<path id="Vector_3" d="M157.168 0.614598H156.515V201.361H157.168H157.821V0.614598H157.168ZM185.566 100.825H184.261C184.261 115.968 171.985 128.244 156.842 128.244V129.549V130.855C173.427 130.855 186.872 117.41 186.872 100.825H185.566ZM156.842 129.549V128.244C141.698 128.244 129.423 115.968 129.423 100.825H128.117H126.811C126.811 117.41 140.256 130.855 156.842 130.855V129.549ZM128.117 100.825H129.423C129.423 85.6816 141.698 73.4057 156.842 73.4057V72.1V70.7943C140.256 70.7943 126.811 84.2394 126.811 100.825H128.117ZM156.842 72.1V73.4057C171.985 73.4057 184.261 85.6816 184.261 100.825H185.566H186.872C186.872 84.2394 173.427 70.7943 156.842 70.7943V72.1Z" fill="white" mask="url(#stroke0_0_349)"/>
+<path id="Vector 185" d="M157.169 0.614598V201.198" stroke-width="0.979252" stroke="white"/>
+</g>
+</g>
+<defs>
+<pattern id="pattern0_0_349" patternUnits="userSpaceOnUse" patternTransform="matrix(55.7225 0 0 394.144 0.0684263 0)" preserveAspectRatio="none" viewBox="0 0 118.8 840.312" width="1" height="1">
+<g id="pattern0_0_349_inner">
+<rect id="Rectangle 21585" width="60" height="424.4" fill="url(#paint0_linear_0_349)"/>
+</g>
+</pattern><linearGradient id="paint0_linear_0_349" x1="30" y1="0" x2="30" y2="424.4" gradientUnits="userSpaceOnUse">
+<stop stop-color="#4C9B41"/>
+<stop offset="0.5" stop-color="#4C9B41" stop-opacity="0"/>
+<stop offset="1" stop-color="#4C9B41"/>
+</linearGradient>
+</defs>
+</svg>

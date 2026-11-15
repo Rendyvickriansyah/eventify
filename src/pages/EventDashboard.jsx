@@ -162,8 +162,8 @@ export function EventDashboard({ eventId, section = 'overview' }) {
             {/* Figma "All-Time Orders": four cards, 24 top / 32 bottom */}
             <PageSection title="All-Time Orders" className="pt-6 pb-8">
               <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                {event.orderMetrics.map((metric) => (
-                  <MetricCard key={metric.id} label={metric.label} value={metric.value} trend={metric.trend} />
+                {event.orderMetrics.map((metric, i) => (
+                  <MetricCard key={metric.id} label={metric.label} value={metric.value} trend={metric.trend} countUp={150 + i * 80} />
                 ))}
               </div>
             </PageSection>

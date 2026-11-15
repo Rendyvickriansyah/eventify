@@ -6,6 +6,9 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Icon } from '@/components/ui/Icon'
 import { Field, TextInput, Select } from '@/components/ui/Field'
+import { NotificationPreferences } from '@/components/data/NotificationPreferences'
+import { AccountSettings } from '@/components/data/AccountSettings'
+import { ActionList, actionButtonClass as actionClass } from '@/components/data/ActionList'
 import { navigation } from '@/data/navigation'
 import { headerActions } from '@/data/dashboard'
 import { accountTabs, profile, countries, security } from '@/data/account'
@@ -26,7 +29,7 @@ function validate(values) {
 /** Sections fade/rise in on mount, 50ms apart (see `.enter-rise` in components.css). */
 const enter = (index) => ({ '--enter-index': index })
 
-/** Account — Figma "Overview" (node 227:22275). */
+/** Account — Figma "Overview" (node 227:22275) and "Notifications" (node 227:25519) and "Settings" (node 227:22273). */
 export function Account() {
   const [tab, setTab] = useState('overview')
   const [saved, setSaved] = useState(profile)
@@ -73,10 +76,10 @@ export function Account() {
             <ProfileForm initial={saved} onSaved={setSaved} style={enter(2)} />
             <SecuritySection style={enter(3)} />
           </>
+        ) : tab === 'notifications' ? (
+          <NotificationPreferences />
         ) : (
-          <p className="enter-rise px-4 py-16 text-center text-body text-fg-muted md:px-8">
-            {tab === 'notifications' ? 'Notification preferences will appear here.' : 'Account settings will appear here.'}
-          </p>
+          <AccountSettings />
         )}
       </div>
     </DashboardLayout>
@@ -192,28 +195,9 @@ function SecuritySection({ style }) {
 
   return (
     <PageSection title="Security" className="enter-rise pb-8" style={style}>
-      <ul className="rounded-lg border border-default">
-        {rows.map((row) => (
-          <li
-            key={row.id}
-            className="flex flex-col items-start gap-3 border-b border-default px-3 py-4 last:border-b-0 sm:flex-row sm:items-center sm:gap-10"
-          >
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <p className="flex items-center gap-2 text-label text-fg">
-                {row.title}
-                {row.badge}
-              </p>
-              <p className="text-body text-fg-muted">{row.description}</p>
-            </div>
-            {row.action}
-          </li>
-        ))}
-      </ul>
+      <ActionList rows={rows} />
     </PageSection>
   )
 }
-
-/* Figma secondary "_Base Buttons": 36px, radius 12, 12 × 10 padding, 14/20 medium */
-const actionClass = 'h-9 rounded-lg px-2.75 text-shadow-button'
 
 export default Account

@@ -219,7 +219,7 @@
    - [data-removing]: deleted card fades + shrinks to 0.96 in 160ms (transition, so it
      retargets cleanly), then the grid closes the gap. */
 .seat-card {
-  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out), border-color 150ms ease;
 }
 .seat-card[data-removing] { opacity: 0; transform: scale(0.96); }
 
@@ -410,4 +410,330 @@
   .voucher-rise { animation-name: enter-fade; animation-duration: var(--duration-fast); }
   .voucher-barcode { animation: none; }
   .voucher-manage:hover .voucher-arrow { transform: none; }
+}
+
+/* Checkbox (Checkbox.jsx): toggled tens of times on a settings page, so it stays quick and
+   small — the fill crossfades and the check pops from 0.6 (never 0) on the strong ease-out. */
+.checkbox-box { transition: background-color 120ms ease, border-color 120ms ease, transform 120ms var(--ease-out); }
+.checkbox-check { opacity: 0; transform: scale(0.6); transition: opacity 120ms var(--ease-out), transform 160ms var(--ease-out); }
+.checkbox[data-checked] .checkbox-check { opacity: 1; transform: scale(1); }
+/* Press feedback — also when the press lands on the enclosing label (the whole table cell). */
+.checkbox:active .checkbox-box,
+label:active > .checkbox .checkbox-box { transform: scale(0.9); }
+@media (prefers-reduced-motion: reduce) {
+  .checkbox-check { transform: none; }
+  .checkbox:active .checkbox-box,
+  label:active > .checkbox .checkbox-box { transform: none; }
+}
+
+/* E-voucher editor (VoucherEditor.jsx). Lists made by the toolbar need their markers back
+   (preflight strips them); :where() keeps utility classes like list-inside in charge. */
+:where(.voucher-doc) ul { list-style: disc; padding-left: 1.25em; }
+:where(.voucher-doc) ol { list-style: decimal; padding-left: 1.25em; }
+/* Editable regions: a faint dashed outline on hover says "you can type here"; solid on focus. */
+.voucher-region { outline: 1px dashed transparent; outline-offset: 4px; transition: outline-color 150ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .voucher-region:hover { outline-color: rgb(0 0 0 / 0.15); }
+  .voucher-tool:hover { background-color: var(--color-surface-muted); }
+}
+.voucher-region:focus { outline-style: solid; outline-color: rgb(21 93 252 / 0.4); }
+.voucher-region[aria-invalid='true'] { outline-style: solid; outline-color: var(--color-red-400); }
+.voucher-tool { transition: background-color 150ms ease, transform 120ms var(--ease-out); }
+.voucher-tool:active { transform: scale(0.96); }
+/* A newly uploaded banner fades in over the placeholder (occasional → standard timing). */
+@keyframes voucher-image-in { from { opacity: 0; } }
+.voucher-image-in { animation: voucher-image-in 240ms var(--ease-out); }
+@media (prefers-reduced-motion: reduce) {
+  .voucher-tool:active { transform: none; }
+}
+
+/* Glass modal (Modal variant="glass") — the dark frosted surface of the dropdowns/menus
+   (.menu-surface), scaled up to a panel. */
+.modal-glass {
+  background-color: rgb(38 38 38 / 0.72);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  backdrop-filter: blur(28px) saturate(160%);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.06) inset, 0 24px 48px -12px rgb(0 0 0 / 0.45);
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .modal-glass { background-color: rgb(52 52 52 / 0.97); }
+}
+
+/* Image upload & crop (ImageCropModal.jsx) — opened occasionally, so standard timings.
+   - dropzone: border brightens on hover/drag (feedback)
+   - upload: the bar fills via transform (JS, rAF); at 100% it turns green and the check
+     pops from 0.6 + its stroke draws (state change, 240ms ease-out)
+   - crop: the cropper fades/scales in from 0.98 (continuity from the upload card)
+   - frame: the thirds grid fades up while dragging (feedback), handles stay put */
+.crop-drop { transition: border-color 150ms ease, background-color 150ms ease; }
+.crop-drop[data-over] { border-color: rgb(255 255 255 / 0.55); background-color: rgb(255 255 255 / 0.08); }
+@media (hover: hover) and (pointer: fine) {
+  .crop-drop:hover { border-color: rgb(255 255 255 / 0.35); background-color: rgb(255 255 255 / 0.05); }
+}
+.upload-card { animation: crop-in 220ms var(--ease-out); }
+.upload-fill { transform-origin: left center; transform: scaleX(0); transition: background-color 200ms ease; }
+.upload-card[data-done] .upload-fill { background-color: var(--color-green-500); }
+.upload-check { opacity: 0; transform: scale(0.6); transition: opacity 160ms var(--ease-out), transform 240ms var(--ease-out); }
+.upload-check path { stroke-dasharray: 24; stroke-dashoffset: 24; transition: stroke-dashoffset 240ms var(--ease-out) 80ms; }
+.upload-card[data-done] .upload-check { opacity: 1; transform: none; }
+.upload-card[data-done] .upload-check path { stroke-dashoffset: 0; }
+@keyframes crop-in { from { opacity: 0; transform: scale(0.98); } }
+.crop-in { animation: crop-in 220ms var(--ease-out); }
+.crop-grid { opacity: 0.5; transition: opacity 150ms ease; }
+.crop-frame[data-dragging] .crop-grid,
+.crop-frame:focus-visible .crop-grid { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .upload-card, .crop-in { animation-name: enter-fade; }
+  .upload-check { transform: none; }
+  .upload-check path { transition: none; stroke-dashoffset: 0; }
+}
+
+/* ── Seating editor (SeatingEditor.jsx, components/seating) ─────────────────── */
+.seat-canvas {
+  transition: background-color 150ms ease;
+}
+/* Tools switch 100+ times a session — colour only, no motion. */
+.seat-tool,
+.seat-zoom {
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+.seat-zoom:hover {
+  background: var(--color-neutral-100);
+}
+.segment {
+  transition: background-color 150ms ease, box-shadow 150ms ease, color 150ms ease;
+}
+/* Assigning recolours shapes — a short fill fade reads as "it took". */
+.seat-obj {
+  transition: fill 160ms ease, fill-opacity 160ms ease;
+}
+
+/* Tier rows. Hover: tint + the swatch lifts 6%. Press: swatch dips. Armed: tier-tinted row,
+   name in the tier colour, a ring around the swatch and one ripple outwards (rare action). */
+.tier-row {
+  position: relative;
+  transition: background-color 150ms ease, opacity 150ms ease;
+}
+.tier-swatch {
+  transition: transform 200ms var(--ease-out);
+}
+.tier-ring {
+  box-shadow: 0 0 0 0 #fff, 0 0 0 0 var(--tier);
+  transition: box-shadow 200ms var(--ease-out);
+}
+.tier-name {
+  transition: color 150ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .tier-row:hover {
+    background-color: color-mix(in oklab, var(--tier) 5%, var(--color-neutral-50));
+  }
+  .tier-row:hover .tier-swatch {
+    transform: scale(1.06);
+  }
+}
+.tier-pick:active .tier-swatch {
+  transform: scale(0.94);
+  transition-duration: 100ms;
+}
+.tier-row[data-armed] {
+  background-color: color-mix(in oklab, var(--tier) 9%, white);
+}
+.tier-row[data-armed] .tier-ring {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--tier);
+}
+.tier-row[data-armed] .tier-name {
+  color: color-mix(in oklab, var(--tier) 75%, black);
+}
+.tier-row[data-armed] .tier-swatch::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid var(--tier);
+  animation: tier-ripple 420ms var(--ease-out) forwards;
+  pointer-events: none;
+}
+/* After an assign: the swatch flashes outwards once */
+.tier-pulse {
+  background: var(--tier);
+  animation: tier-ripple 480ms var(--ease-out) forwards;
+}
+@keyframes tier-ripple {
+  from { transform: scale(1); opacity: 0.55; }
+  to { transform: scale(1.7); opacity: 0; }
+}
+/* Assigned count ticks in when it changes */
+.tick-in {
+  animation: tick-in 200ms var(--ease-out);
+}
+@keyframes tick-in {
+  from { transform: translateY(3px); opacity: 0; }
+}
+.tier-hint {
+  animation: tick-in 180ms var(--ease-out);
+}
+
+/* Tier drag: the lifted row dims, the drop target gets a 2px line */
+.tier-row[data-dragging] {
+  opacity: 0.4;
+}
+.tier-row[data-over]::after {
+  content: '';
+  position: absolute;
+  inset-inline: 24px;
+  top: -1px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--color-blue-500);
+  pointer-events: none;
+}
+.tier-row[data-over='after']::after {
+  top: auto;
+  bottom: -1px;
+}
+
+/* Cursor chip — appears on entering the canvas, grows from the pointer corner */
+.seat-chip {
+  opacity: 0;
+  transform: scale(0.9);
+  transform-origin: top left;
+  transition: opacity 140ms ease, transform 180ms var(--ease-out);
+}
+.seat-chip[data-visible] {
+  opacity: 1;
+  transform: scale(1);
+}
+@starting-style {
+  .seat-chip[data-visible] {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+/* "Selected" tooltip above the selection */
+.seat-tooltip {
+  animation: seat-tooltip-in 160ms var(--ease-out);
+}
+@keyframes seat-tooltip-in {
+  from { opacity: 0; transform: translateY(3px); } /* transform, not translate: Tailwind translate-* owns that property */
+}
+/* Assign button label swaps (Assign Ticket → ✓ Assigned) */
+.assign-label {
+  animation: assign-in 180ms var(--ease-out);
+}
+@keyframes assign-in {
+  from { opacity: 0; transform: scale(0.94); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seat-canvas,
+  .seat-obj,
+  .tier-row,
+  .tier-swatch,
+  .tier-ring {
+    transition: none;
+  }
+  .tier-row[data-armed] .tier-swatch::after,
+  .tier-pulse {
+    animation: none;
+    opacity: 0;
+  }
+  .tick-in,
+  .tier-hint,
+  .seat-tooltip,
+  .assign-label {
+    animation: seat-fade 150ms ease;
+  }
+  .seat-chip,
+  .seat-chip[data-visible] {
+    transform: none;
+  }
+}
+@keyframes seat-fade {
+  from { opacity: 0; }
+}
+
+/* Point editing hint drops in once per double-click (rare) */
+.seat-edit-hint {
+  animation: seat-tooltip-in 160ms var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .seat-edit-hint {
+    animation: seat-fade 150ms ease;
+  }
+}
+
+/* Seating editor right sidebar: 12px type throughout (titles, labels, field values, segmented
+   options). Touch keeps 16px in fields so iOS doesn't zoom on focus. */
+.seat-panel :is(input:not([type='range']):not([type='color']), [role='combobox'], [role='radio']) {
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+}
+@media (pointer: coarse) {
+  .seat-panel :is(input:not([type='range']):not([type='color']), [role='combobox']) {
+    font-size: 16px;
+  }
+}
+
+/* ── Layers tab (LayersPanel.jsx) ─────────────────────────────────────────── */
+.tab-panel-in {
+  animation: seat-fade 120ms ease;
+}
+/* Rows switch state constantly while working — colour only, no motion. */
+.layer-row {
+  transition: background-color 100ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .layer-row:hover {
+    background-color: var(--color-neutral-100);
+  }
+}
+.layer-row[data-parent-selected] {
+  background-color: rgb(43 127 255 / 0.05);
+}
+.layer-row[data-selected] {
+  background-color: rgb(43 127 255 / 0.12);
+}
+.layer-row:focus-visible {
+  box-shadow: inset 0 0 0 2px rgb(43 127 255 / 0.5);
+}
+.layer-row[data-dragging] {
+  opacity: 0.45;
+}
+/* Drop targets: a 2px line above / below (indented to the row's level), or a ring for "inside" */
+.layer-row[data-over='above']::after,
+.layer-row[data-over='below']::after {
+  content: '';
+  position: absolute;
+  left: var(--indent);
+  right: 8px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--color-blue-500);
+  pointer-events: none;
+}
+.layer-row[data-over='above']::after { top: -1px; }
+.layer-row[data-over='below']::after { bottom: -1px; }
+.layer-row[data-over='inside'] {
+  box-shadow: inset 0 0 0 2px var(--color-blue-500);
+}
+.layer-chevron {
+  transition: transform 150ms var(--ease-out);
+}
+.layer-toggle {
+  transition: opacity 100ms ease, background-color 100ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tab-panel-in { animation: none; }
+  .layer-chevron { transition: none; }
+}
+
+/* Seating chart cards open the editor on click (stretched title link) */
+.seat-card-link {
+  cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) {
+  .seat-card-link:hover {
+    border-color: rgb(0 0 0 / 0.18);
+  }
 }

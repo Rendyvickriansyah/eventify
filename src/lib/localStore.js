@@ -82,6 +82,14 @@ export function createEventCollection(key, idPrefix) {
     use: (eventId) => store.useStore((all) => all[eventId] ?? EMPTY),
     /** Live map of every event's items. */
     useAll: () => store.useStore(),
+    /** Merges `patch` into one item and stamps `updatedAt`; returns the updated item. */
+    update(eventId, itemId, patch) {
+      const all = store.read()
+      let updated = null
+      const list = (all[eventId] ?? []).map((t) => (t.id === itemId ? (updated = { ...t, ...patch, updatedAt: new Date().toISOString() }) : t))
+      store.write({ ...all, [eventId]: list })
+      return updated
+    },
     remove(eventId, itemId) {
       const all = store.read()
       store.write({ ...all, [eventId]: (all[eventId] ?? []).filter((t) => t.id !== itemId) })

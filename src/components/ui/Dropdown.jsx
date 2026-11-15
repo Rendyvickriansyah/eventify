@@ -113,7 +113,7 @@ export function Dropdown({ label, options = [], value = null, onChange, align = 
           open && 'bg-surface-hover',
         )}
       >
-        <span>{selected ? selected.label : label}</span>
+        <span className="font-medium">{selected ? selected.label : label}</span>
         <Icon
           src={chevronDown}
           className={cn('transition-transform duration-150 ease-standard', open && 'rotate-180')}
