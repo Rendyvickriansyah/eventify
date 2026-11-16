@@ -82,12 +82,13 @@ export function createEventCollection(key, idPrefix) {
     use: (eventId) => store.useStore((all) => all[eventId] ?? EMPTY),
     /** Live map of every event's items. */
     useAll: () => store.useStore(),
-    /** Merges `patch` into one item and stamps `updatedAt`; returns the updated item. */
+    /** Merges `patch` into one item and stamps `updatedAt`; returns the updated item (lists highlight it too). */
     update(eventId, itemId, patch) {
       const all = store.read()
       let updated = null
       const list = (all[eventId] ?? []).map((t) => (t.id === itemId ? (updated = { ...t, ...patch, updatedAt: new Date().toISOString() }) : t))
       store.write({ ...all, [eventId]: list })
+      if (updated) justCreated = { id: updated.id, at: Date.now() }
       return updated
     },
     remove(eventId, itemId) {
@@ -100,7 +101,7 @@ export function createEventCollection(key, idPrefix) {
       const { id: _id, sold: _sold, createdAt: _createdAt, ...rest } = source
       return add(eventId, { ...rest, name: `Copy of ${source.name}` })
     },
-    /** Id created in the last few seconds (lists highlight it); StrictMode-safe. */
+    /** Id created or updated in the last few seconds (lists highlight it); StrictMode-safe. */
     takeJustCreated: () => (justCreated && Date.now() - justCreated.at < 3000 ? justCreated.id : null),
   }
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Copy, Trash2 } from 'lucide-react'
+import { Copy, Pencil, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { EventSwitcher } from '@/components/layout/EventSwitcher'
@@ -80,8 +80,11 @@ export function TicketList({ eventId, initialTab = 'types' }) {
   ]
   const addOnRows = [...(demoAddOns[eventId] ?? []).map((a) => ({ ...a, demo: true })), ...storedAddOns]
 
-  /** ⋯ menu shared by both tables. Demo rows and rows with sales can't be deleted. */
-  const actionsColumn = (noun, onDuplicate, onRemove) => ({
+  /**
+   * ⋯ menu shared by both tables. Demo rows and rows with sales can't be deleted; `editHref`
+   * (ticket types only) adds an Edit item that opens the ticket wizard in edit mode.
+   */
+  const actionsColumn = (noun, onDuplicate, onRemove, editHref) => ({
     key: 'actions',
     header: <span className="sr-only">Actions</span>,
     align: 'right',
@@ -91,6 +94,16 @@ export function TicketList({ eventId, initialTab = 'types' }) {
         icon={moreIcon}
         label={`More actions for ${row.name}`}
         items={[
+          ...(editHref
+            ? [{
+                id: 'edit',
+                icon: Pencil,
+                label: 'Edit',
+                onSelect: () => (row.demo
+                  ? toast.info(`Sample ${noun}s can’t be edited`, { description: `Create a new ${noun} instead.` })
+                  : (window.location.hash = editHref(row))),
+              }]
+            : []),
           {
             id: 'duplicate',
             icon: Copy,
@@ -129,7 +142,7 @@ export function TicketList({ eventId, initialTab = 'types' }) {
         { key: 'name', header: 'Ticket Type', render: (row) => row.name },
         { key: 'quantity', header: 'Quantity', render: (row) => soldOf(row, row.quantity) },
         { key: 'price', header: 'Price Per Unit', render: (row) => price(row.price) },
-        actionsColumn('ticket type', duplicateTicket, removeTicket),
+        actionsColumn('ticket type', duplicateTicket, removeTicket, (row) => `#/event/${eventId}/tickets/${row.id}/edit`),
       ]
 
   const rows = isAddOns ? addOnRows : ticketRows

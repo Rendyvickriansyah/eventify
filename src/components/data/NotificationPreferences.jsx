@@ -61,7 +61,7 @@ export function NotificationPreferences() {
               </thead>
               <tbody>
                 {group.items.map((item) => (
-                  <tr key={item.id} className="h-17">
+                  <tr key={item.id} className="h-17 last:*:border-b-0">
                     <th scope="row" className="border-b border-default py-3 pr-3 pl-4 font-normal">
                       <span className="flex flex-col gap-1">
                         <span className="text-label text-fg">{item.label}</span>

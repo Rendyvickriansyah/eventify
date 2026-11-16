@@ -58,6 +58,7 @@ function Route({ route }) {
   if (page === 'event' && id && section === 'tickets' && getEventDetail(id)) {
     if (sub === 'new') return <CreateTicket eventId={id} />
     if (sub === 'addons' && action === 'new') return <CreateAddOn eventId={id} />
+    if (sub && sub !== 'addons' && action === 'edit') return <CreateTicket eventId={id} ticketId={sub} />
     return <TicketList eventId={id} initialTab={sub === 'addons' ? 'addons' : 'types'} />
   }
   if (page === 'event' && id) return <EventDashboard eventId={id} section={section} />

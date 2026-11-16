@@ -186,7 +186,10 @@ export function DatePicker({
     if (e.key === 'Escape') { e.preventDefault(); close() }
   }
 
-  const display = value ? `${shortDate.format(fromIso(value))}` : placeholder
+  // With a time column the trigger shows both, e.g. "Jul 1, 2026 · 9:00 AM".
+  const display = value
+    ? `${shortDate.format(fromIso(value))}${withTime && time ? ` · ${formatTime(time)}` : ''}`
+    : withTime && placeholder === 'Select a date' ? 'Select date & time' : placeholder
 
   return (
     <>

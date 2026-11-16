@@ -66,7 +66,7 @@ export function Table({
           <tbody>
             {loading &&
               Array.from({ length: 4 }).map((_, i) => (
-                <tr key={`skeleton-${i}`}>
+                <tr key={`skeleton-${i}`} className="last:*:border-b-0">
                   {columns.map((col) => (
                     <td key={col.key} className="h-12 border-b border-default px-3 py-2">
                       <span className="block h-4 w-3/5 animate-pulse rounded-xs bg-surface-muted" />
@@ -87,7 +87,8 @@ export function Table({
               data.map((row, index) => (
                 <tr
                   key={rowKey(row, index)}
-                  className={cn('transition-colors duration-150 hover:bg-surface-hover', onRowClick && 'table-row-link', rowClassName?.(row, index))}
+                  // Last row: no divider — the frame's own border closes the table.
+                  className={cn('transition-colors duration-150 hover:bg-surface-hover last:*:border-b-0', onRowClick && 'table-row-link', rowClassName?.(row, index))}
                   style={rowStyle?.(row, index)}
                   {...(onRowClick && {
                     tabIndex: 0,

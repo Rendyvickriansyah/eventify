@@ -16,6 +16,8 @@ export const useTickets = tickets.use
 export const useAllTickets = tickets.useAll
 /** Saves a ticket type; throws when storage is full or unavailable. */
 export const addTicket = tickets.add
+/** Saves edits to a ticket type; throws when storage is full or unavailable. */
+export const updateTicket = tickets.update
 export const removeTicket = tickets.remove
 export const duplicateTicket = tickets.duplicate
 export const takeJustCreatedTicket = tickets.takeJustCreated

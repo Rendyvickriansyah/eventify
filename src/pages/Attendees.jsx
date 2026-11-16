@@ -29,7 +29,6 @@ const checkinOptions = [
   { value: 'out', label: 'Not checked-in' },
 ]
 const paymentOptions = ['Paid', 'Pending', 'Refunded'].map((p) => ({ value: p, label: p }))
-const paymentTone = { Paid: 'success', Pending: 'warning', Refunded: 'neutral' }
 const count = (n) => n.toLocaleString('en-US')
 const enter = (index) => ({ '--enter-index': index })
 
@@ -260,7 +259,6 @@ function AttendeeSheet({ event, attendee, onClose }) {
                 ['Quantity', a.quantity],
                 ['Access Level', a.accessLevel],
                 ['Gate', a.gate],
-                ['Payment', <Badge key="p" tone={paymentTone[a.payment]}>{a.payment}</Badge>],
                 ['Check-in Time', formatCheckIn(a.checkedInAt)],
               ]}
             />
