@@ -45,21 +45,38 @@ function seeded(str) {
 
 const gateFor = (ticket, i) => (/vip|court|premium/i.test(ticket) ? 'Gate C' : i % 2 ? 'Gate B' : 'Gate A')
 
+// Presentation fallback: events with no sales yet (e.g. just created) still show sample attendees.
+const sampleTypes = [
+  { id: 'sample-regular', name: 'Regular', sold: 70 },
+  { id: 'sample-vip', name: 'VIP', sold: 30 },
+  { id: 'sample-parking', name: 'Parking & Transport', sold: 20 },
+]
+const SAMPLE_CHECKIN_RATE = 0.6
+const todayIso = () => new Date().toISOString().slice(0, 10)
+
 /** The generated list for an event (before the organiser's changes). */
 function baseAttendees(event) {
-  const types = event.ticketTypes.filter((t) => t.sold > 0)
+  let types = event.ticketTypes.filter((t) => t.sold > 0)
+  const sample = types.length === 0
+  if (sample) {
+    // The event's own ticket types when it has some (weighted by capacity), else a default set
+    types = event.ticketTypes.length
+      ? event.ticketTypes.map((t, i) => ({ ...t, sold: Math.max(10, Math.min(60, Math.round((t.capacity || 100) / (i + 2)))) }))
+      : sampleTypes
+  }
   const sold = types.reduce((n, t) => n + t.sold, 0)
   if (!sold) return []
   const rand = seeded(event.id)
   const count = Math.min(sold, 486)
-  const checkinRate = event.status === 'upcoming' ? 0 : sold ? event.checkin.total / sold : 0
+  const checkinRate = sample ? SAMPLE_CHECKIN_RATE : event.status === 'upcoming' ? 0 : event.checkin.total / sold
+  const checkinDate = event.date ?? todayIso()
   const used = new Map()
   const list = []
   for (let i = 0; i < count; i++) {
     // ticket type weighted by what each sold
     let r = rand() * sold
     const type = types.find((t) => (r -= t.sold) < 0) ?? types[0]
-    const ti = event.ticketTypes.indexOf(type)
+    const ti = types.indexOf(type)
     const name = i < figmaNames.length ? figmaNames[i] : `${first[Math.floor(rand() * first.length)]} ${last[Math.floor(rand() * last.length)]}`
     const base = name.toLowerCase().replace(/[^a-z]+/g, '.')
     const n = used.get(base) ?? 0
@@ -84,7 +101,7 @@ function baseAttendees(event) {
       seat: `${'ABCDEFGH'[ti % 8]}-${1 + Math.floor(rand() * 40)}`,
       gate: gateFor(type.name, i),
       payment,
-      checkedInAt: checkedIn && event.date ? `${event.date}T${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}:00` : null,
+      checkedInAt: checkedIn ? `${checkinDate}T${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}:00` : null,
       addOns: addOns.filter((a, k) => addOns.findIndex((b) => b.name === a.name) === k),
     })
   }

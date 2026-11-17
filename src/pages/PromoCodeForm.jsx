@@ -30,7 +30,7 @@ function validate(f, taken) {
   else if (f.type === 'percentage' && value > 100) e.value = 'A percentage can’t be more than 100.'
   if (f.maxUsage !== '' && Number(f.maxUsage) < 1) e.maxUsage = 'Use at least 1, or leave it empty for unlimited.'
   else if (f.maxUsage !== '' && Number(f.maxUsage) < f.used) e.maxUsage = `It’s already been used ${f.used} times — the limit can’t be lower.`
-  if (f.start && f.end && f.end < f.start) e.end = 'The end date can’t be before the start date.'
+  if (f.start && f.end && `${f.end}T${f.endTime || '23:59'}` <= `${f.start}T${f.startTime || '00:00'}`) e.end = 'The end has to be after the start.'
   return e
 }
 
@@ -43,8 +43,8 @@ export function PromoCodeForm({ eventId, codeId = null }) {
   const listHref = `#/event/${eventId}/promo`
   const backHref = editing ? `${listHref}/${editing.id}` : listHref
   const [form, setForm] = useState(() => (editing
-    ? { code: editing.code, type: editing.type, value: String(editing.value), maxUsage: editing.maxUsage == null ? '' : String(editing.maxUsage), start: editing.start ?? '', end: editing.end ?? '', active: editing.active, used: editing.used }
-    : { code: '', type: 'percentage', value: '', maxUsage: '', start: '', end: '', active: true, used: 0 }))
+    ? { code: editing.code, type: editing.type, value: String(editing.value), maxUsage: editing.maxUsage == null ? '' : String(editing.maxUsage), start: editing.start ?? '', startTime: editing.startTime ?? '', end: editing.end ?? '', endTime: editing.endTime ?? '', active: editing.active, used: editing.used }
+    : { code: '', type: 'percentage', value: '', maxUsage: '', start: '', startTime: '', end: '', endTime: '', active: true, used: 0 }))
   const [errors, setErrors] = useState({})
   const [attempt, setAttempt] = useState(0)
   const [saving, setSaving] = useState(false)
@@ -55,6 +55,7 @@ export function PromoCodeForm({ eventId, codeId = null }) {
   const dirty = editing
     ? form.code !== editing.code || form.type !== editing.type || Number(form.value) !== editing.value || form.active !== editing.active
       || (form.maxUsage === '' ? null : Number(form.maxUsage)) !== editing.maxUsage || (form.start || null) !== editing.start || (form.end || null) !== editing.end
+      || form.startTime !== (editing.startTime ?? '') || form.endTime !== (editing.endTime ?? '')
     : Boolean(form.code || form.value || form.maxUsage || form.start || form.end)
   useWizardEffects({ step: 0, formRef, firstFieldRef: codeRef, attempt, dirty: dirty && !saving })
 
@@ -98,7 +99,9 @@ export function PromoCodeForm({ eventId, codeId = null }) {
       value: Number(form.value),
       maxUsage: form.maxUsage === '' ? null : Number(form.maxUsage),
       start: form.start || null,
+      startTime: form.start ? form.startTime || null : null,
       end: form.end || null,
+      endTime: form.end ? form.endTime || null : null,
       active: form.active,
     }
     try {
@@ -161,11 +164,12 @@ export function PromoCodeForm({ eventId, codeId = null }) {
           {(f) => <TextInput {...ids(f)} {...bind('maxUsage', digits)} inputMode="numeric" placeholder="Unlimited" autoComplete="off" className="tabular-nums" />}
         </Field>
         <div className="grid grid-cols-1 gap-x-3 gap-y-5 sm:grid-cols-2">
+          {/* Date + time picked together in the calendar panel, shown in one field (like Create Ticket) */}
           <Field label="Start Date" aside={<OptionalTag />} className="min-h-0">
-            {(f) => <DateInput {...ids(f)} {...bind('start')} placeholder="Anytime" />}
+            {(f) => <DateInput {...ids(f)} {...bind('start')} time={form.startTime} onTimeChange={(t) => setValue('startTime', t)} placeholder="Anytime" />}
           </Field>
           <Field label="End Date" error={errors.end} aside={<OptionalTag />} className="min-h-0">
-            {(f) => <DateInput {...ids(f)} {...bind('end')} min={form.start || undefined} placeholder="No end date" />}
+            {(f) => <DateInput {...ids(f)} {...bind('end')} min={form.start || undefined} time={form.endTime} onTimeChange={(t) => setValue('endTime', t)} placeholder="No end date" />}
           </Field>
         </div>
         <Switch

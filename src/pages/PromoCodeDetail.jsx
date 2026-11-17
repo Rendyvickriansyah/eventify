@@ -12,8 +12,12 @@ import { toast } from '@/components/ui/Toast'
 import { headerActions } from '@/data/dashboard'
 import { getEventDetail, eventNavigation } from '@/data/eventDetail'
 import { usePromoCodes, ensureDemoPromoCodes, updatePromoCode, typeLabel, formatValue, formatLongDate, promoStatus, isUsedUp, usageHistory } from '@/data/promoStore'
+import { formatTime } from '@/components/ui/DatePicker'
 import copyIcon from '@/assets/icons/copy.svg'
 import trashIcon from '@/assets/icons/trash.svg'
+
+/** "May 17, 2026" + "13:30" → "May 17, 2026 · 1:30 PM" (date alone when no time was set). */
+const withTime = (date, hhmm) => (hhmm ? `${date} · ${formatTime(hhmm)}` : date)
 
 /*
  * Promo Code Details — Figma node 270:33157. Route: #/event/:id/promo/:codeId.
@@ -66,8 +70,8 @@ export function PromoCodeDetail({ eventId, codeId }) {
     ['Discount Value', formatValue(promo)],
     ['Usage', promo.maxUsage == null ? `${promo.used.toLocaleString('en-US')} used` : `${promo.used.toLocaleString('en-US')} out of ${promo.maxUsage.toLocaleString('en-US')}`],
     ['Max Usage', promo.maxUsage == null ? 'Unlimited' : promo.maxUsage.toLocaleString('en-US')],
-    ['Start Date', promo.start ? formatLongDate(promo.start) : 'Anytime'],
-    ['End Date', promo.end ? formatLongDate(promo.end) : 'No end date'],
+    ['Start Date', promo.start ? withTime(formatLongDate(promo.start), promo.startTime) : 'Anytime'],
+    ['End Date', promo.end ? withTime(formatLongDate(promo.end), promo.endTime) : 'No end date'],
   ]
 
   function enable() {

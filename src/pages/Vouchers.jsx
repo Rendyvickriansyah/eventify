@@ -51,6 +51,7 @@ export function Vouchers({ eventId }) {
           <EmptyState
             illustration={<VoucherIllustration />}
             title="No E-Voucher Templates Yet"
+            className="max-w-125" /* wide enough for the description to sit on 2 lines */
             description="Design your first e-voucher template to get started. Customize the layout, add your branding, and attach it to any ticket type."
             actions={
               <>

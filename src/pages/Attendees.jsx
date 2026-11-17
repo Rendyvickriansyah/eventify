@@ -29,6 +29,7 @@ const checkinOptions = [
   { value: 'out', label: 'Not checked-in' },
 ]
 const paymentOptions = ['Paid', 'Pending', 'Refunded'].map((p) => ({ value: p, label: p }))
+const paymentTone = { Paid: 'success', Pending: 'warning', Refunded: 'neutral' }
 const count = (n) => n.toLocaleString('en-US')
 const enter = (index) => ({ '--enter-index': index })
 
@@ -57,7 +58,8 @@ export function Attendees({ eventId }) {
 
   if (!event) return null // App only routes here for known events
 
-  const ticketOptions = event.ticketTypes.map((t) => ({ value: t.id, label: t.name }))
+  // From the attendees themselves, so sample ticket types (events without sales) filter too
+  const ticketOptions = [...new Map(attendees.map((a) => [a.ticketTypeId, a.ticketType])).entries()].map(([value, label]) => ({ value, label }))
   const filtering = Object.values(filters).some(Boolean)
 
   function exportCsv() {
@@ -166,12 +168,13 @@ export function Attendees({ eventId }) {
 /** Figma "Badges": green check "Checked-in", or neutral "Not checked-in". */
 function CheckinBadge({ attendee }) {
   return attendee.checkedInAt ? (
-    <Badge tone="success" key="in" className="badge-swap">
+    <Badge tone="success" key="in" className="badge-swap font-medium">
       <Icon src={checkSuccess} className="size-5 dark:invert-0" />
       Checked-in
     </Badge>
   ) : (
-    <Badge tone="neutral" key="out" className="badge-swap">Not checked-in</Badge>
+    // No leading icon, so 8px on both sides (7.5px + the 0.5px hairline border)
+    <Badge tone="neutral" key="out" className="badge-swap px-[7.5px] font-medium">Not checked-in</Badge>
   )
 }
 
@@ -222,16 +225,6 @@ function AttendeeSheet({ event, attendee, onClose }) {
         open={Boolean(attendee)}
         onClose={onClose}
         title="Attendee Details"
-        footer={a && (
-          <>
-            <Button variant="glass" onClick={resend} loading={busy === 'resend'} disabled={refunded} className="h-11 w-full text-body-lg">
-              {busy === 'resend' ? 'Sending…' : 'Resend Ticket'}
-            </Button>
-            <Button onClick={() => setConfirmRefund(true)} disabled={refunded || a.payment === 'Pending'} className="h-11 w-full rounded-lg text-body-lg font-medium text-shadow-button">
-              {refunded ? 'Refunded' : 'Refund Ticket'}
-            </Button>
-          </>
-        )}
       >
         {a && (
           <div key={a.id} className="sheet-content flex flex-col gap-6">
@@ -239,8 +232,8 @@ function AttendeeSheet({ event, attendee, onClose }) {
               <div className="flex items-center gap-3">
                 <Avatar attendee={a} />
                 <div className="flex min-w-0 flex-col gap-1">
-                  <p className="truncate text-body-lg font-medium text-fg">{a.name}</p>
-                  <p className="truncate text-body-lg text-fg opacity-60">{a.email || 'No email on file'}</p>
+                  <p className="truncate text-body font-medium text-fg">{a.name}</p>
+                  <p className="truncate text-body text-fg opacity-60">{a.email || 'No email on file'}</p>
                 </div>
               </div>
               <Button onClick={toggleCheckIn} disabled={!canCheckIn} className="h-10 w-full rounded-lg text-label text-shadow-button">
@@ -259,6 +252,7 @@ function AttendeeSheet({ event, attendee, onClose }) {
                 ['Quantity', a.quantity],
                 ['Access Level', a.accessLevel],
                 ['Gate', a.gate],
+                ['Payment', <Badge key="p" tone={paymentTone[a.payment]}>{a.payment}</Badge>],
                 ['Check-in Time', formatCheckIn(a.checkedInAt)],
               ]}
             />
@@ -268,6 +262,15 @@ function AttendeeSheet({ event, attendee, onClose }) {
               rows={a.addOns.map((x) => [x.name, x.quantity])}
               empty="No add-ons on this order."
             />
+            {/* Actions scroll with the details (not pinned); pb-3 + the body's 12px = 24px bottom */}
+            <div className="flex flex-col gap-3 pb-3">
+              <Button variant="glass" onClick={resend} loading={busy === 'resend'} disabled={refunded} className="h-11 w-full text-body font-medium">
+                {busy === 'resend' ? 'Sending…' : 'Resend Ticket'}
+              </Button>
+              <Button onClick={() => setConfirmRefund(true)} disabled={refunded || a.payment === 'Pending'} className="h-11 w-full rounded-lg text-body font-medium text-shadow-button">
+                {refunded ? 'Refunded' : 'Refund Ticket'}
+              </Button>
+            </div>
           </div>
         )}
       </Sheet>

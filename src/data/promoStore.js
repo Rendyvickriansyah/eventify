@@ -9,6 +9,7 @@ import { parseCsv } from '@/lib/csv'
  * @typedef {{ id: string, code: string, type: 'percentage' | 'fixed', value: number,
  *   used: number, maxUsage: number | null,            // null = unlimited (∞)
  *   start: string | null, end: string | null,          // 'YYYY-MM-DD'; both null = all time
+ *   startTime?: string | null, endTime?: string | null, // 'HH:MM' picked with the date (display only)
  *   active: boolean, createdAt: string, demo?: boolean }} PromoCode
  */
 const promos = createEventCollection('eventify:promos', 'promo')
